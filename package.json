@@ -10,10 +10,10 @@
     "lint": "tsc --noEmit"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.21.0",
+    "firebase": "^12.9.0",
     "react": "^19.2.4",
-    "react-dom": "^19.2.4",
-    "@google/genai": "^1.40.0",
-    "firebase": "^12.9.0"
+    "react-dom": "^19.2.4"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
