@@ -22,7 +22,12 @@ const MATERIAL_ANALYSIS_SCHEMA = {
 };
 
 export async function analyzeWasteImage(base64Image: string): Promise<WasteAnalysis> {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    throw new Error("GEMINI_API_KEY is not configured. Please ensure it is set in your environment.");
+  }
+
+  const ai = new GoogleGenAI({ apiKey });
   
   const prompt = `
     Analyze this waste item for a user in Malaysia. 
@@ -59,7 +64,11 @@ export async function analyzeWasteImage(base64Image: string): Promise<WasteAnaly
       },
     });
 
-    const text = response.text || "{}";
+    const text = response.text;
+    if (!text) {
+      throw new Error("No response text received from the model.");
+    }
+    
     const result = JSON.parse(text);
     return result as WasteAnalysis;
   } catch (error) {
