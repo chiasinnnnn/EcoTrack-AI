@@ -1,5 +1,5 @@
 
-import { db } from "./firebase.ts";
+import { db } from "./firebase";
 import { 
   collection, 
   addDoc, 
@@ -10,7 +10,7 @@ import {
   onSnapshot,
   Timestamp 
 } from "firebase/firestore";
-import { HistoryItem, WasteAnalysis } from "../types.ts";
+import { HistoryItem, WasteAnalysis } from "../types";
 
 const COLLECTION_NAME = "scans";
 

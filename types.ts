@@ -3,6 +3,7 @@ export interface WasteAnalysis {
   material: string;
   recyclable: boolean;
   instruction: string;
+  hazard_level: 'Low' | 'Medium' | 'High';
 }
 
 export interface HistoryItem {

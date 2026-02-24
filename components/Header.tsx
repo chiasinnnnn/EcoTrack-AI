@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { auth, googleProvider } from '../services/firebase.ts';
+import { auth, googleProvider } from '../services/firebase';
 import { signInWithPopup, signOut, User } from 'firebase/auth';
 
 interface HeaderProps {

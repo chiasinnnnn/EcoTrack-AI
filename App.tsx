@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { auth } from './services/firebase.ts';
+import { auth } from './services/firebase';
 import { onAuthStateChanged, User, signInWithPopup, signOut } from 'firebase/auth';
-import { googleProvider } from './services/firebase.ts';
-import { analyzeWasteImage } from './services/geminiService.ts';
-import { saveScanToFirestore, subscribeToUserHistory } from './services/firestoreService.ts';
-import { WasteAnalysis, HistoryItem } from './types.ts';
-import GuideCard from './components/GuideCard.tsx';
+import { googleProvider } from './services/firebase';
+import { analyzeWasteImage } from './services/geminiService';
+import { saveScanToFirestore, subscribeToUserHistory } from './services/firestoreService';
+import { WasteAnalysis, HistoryItem } from './types';
+import GuideCard from './components/GuideCard';
 
 /**
  * Flutter Prototype: KitaroApp
@@ -172,8 +172,17 @@ const KitaroApp: React.FC = () => {
                     <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Detected</span>
                     <h3 className="text-3xl font-black text-gray-900 leading-none mt-1">{result.material}</h3>
                   </div>
-                  <div className={`px-4 py-2 rounded-full text-[10px] font-black ${result.recyclable ? 'bg-emerald-100 text-emerald-700' : 'bg-red-50 text-red-600'}`}>
-                    {result.recyclable ? 'RECYCLABLE' : 'RESIDUAL'}
+                  <div className="flex flex-col items-end gap-2">
+                    <div className={`px-4 py-2 rounded-full text-[10px] font-black ${result.recyclable ? 'bg-emerald-100 text-emerald-700' : 'bg-red-50 text-red-600'}`}>
+                      {result.recyclable ? 'RECYCLABLE' : 'RESIDUAL'}
+                    </div>
+                    <div className={`px-3 py-1 rounded-full text-[8px] font-bold border ${
+                      result.hazard_level === 'High' ? 'border-red-200 bg-red-50 text-red-700' : 
+                      result.hazard_level === 'Medium' ? 'border-amber-200 bg-amber-50 text-amber-700' : 
+                      'border-blue-200 bg-blue-50 text-blue-700'
+                    }`}>
+                      {result.hazard_level.toUpperCase()} HAZARD
+                    </div>
                   </div>
                 </div>
 
