@@ -18,7 +18,6 @@ const EcoTrackApp: React.FC = () => {
   const [result, setResult] = useState<WasteAnalysis | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [history, setHistory] = useState<HistoryItem[]>([]);
-  const [isHistoryLoading, setIsHistoryLoading] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [location, setLocation] = useState<{lat: number, lng: number} | null>(null);
   const [isDetectingLocation, setIsDetectingLocation] = useState(false);
@@ -30,25 +29,12 @@ const EcoTrackApp: React.FC = () => {
     return () => unsubscribe();
   }, []);
 
-  const loadUserStats = async (userId: string) => {
-    setIsHistoryLoading(true);
-    try {
-      const items = await getHistoryFromFirestore(userId);
-      setHistory(items);
-    } catch (err: any) {
-      console.error("Failed to load stats:", err);
-      if (err.message?.includes("index")) {
-        console.error("Firestore Index Error: The query requires an index. Please create it using this link:", 
-          `https://console.firebase.google.com/project/${import.meta.env.VITE_FIREBASE_PROJECT_ID}/firestore/indexes`);
-      }
-    } finally {
-      setIsHistoryLoading(false);
-    }
-  };
-
   useEffect(() => {
     if (user) {
-      loadUserStats(user.uid);
+      // Initial fetch to ensure history is loaded immediately
+      getHistoryFromFirestore(user.uid).then(items => {
+        if (items.length > 0) setHistory(items);
+      });
 
       // Real-time subscription for subsequent updates
       const unsubscribe = subscribeToUserHistory(user.uid, (items) => setHistory(items));
@@ -90,18 +76,28 @@ const EcoTrackApp: React.FC = () => {
           const data = await analyzeWasteImage(base64);
           clearTimeout(timeout);
           setResult(data);
+          setLoading(false);
           
-          // Save to Firestore before hiding loading state to ensure persistence
+          // Optimistic update for immediate UI feedback (Counters & History)
+          const newItem: HistoryItem = {
+            id: `temp_${Date.now()}`,
+            timestamp: Date.now(),
+            image: base64,
+            result: data
+          };
+          setHistory(prev => {
+            // Avoid duplicates if subscription already fired
+            if (prev.some(item => item.image === base64)) return prev;
+            return [newItem, ...prev].slice(0, 50);
+          });
+          
+          // Background save to Firestore (non-blocking)
           const userId = auth.currentUser?.uid;
           if (userId) {
-            try {
-              await saveScanToFirestore(userId, base64, data);
-            } catch (err) {
-              console.error("Firestore save failed:", err);
-            }
+            saveScanToFirestore(userId, base64, data).catch(err => {
+              console.error("Background save failed:", err);
+            });
           }
-          
-          setLoading(false);
         } catch (err: any) {
           clearTimeout(timeout);
           setError(err.message);
@@ -451,12 +447,7 @@ const EcoTrackApp: React.FC = () => {
         {currentIndex === 3 && (
           <div className="page-transition space-y-8">
             <h2 className="text-2xl font-black text-gray-900">My Profile</h2>
-            {isHistoryLoading ? (
-              <div className="flex flex-col items-center justify-center py-20 text-gray-400">
-                <div className="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-                <p className="font-bold uppercase tracking-widest text-[10px]">Loading your profile...</p>
-              </div>
-            ) : user ? (
+            {user ? (
               <div className="space-y-6">
                 <div className="flex items-center gap-4 bg-white p-6 rounded-[28px] border border-gray-100">
                   <img 
