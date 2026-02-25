@@ -35,8 +35,12 @@ const EcoTrackApp: React.FC = () => {
     try {
       const items = await getHistoryFromFirestore(userId);
       setHistory(items);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to load stats:", err);
+      if (err.message?.includes("index")) {
+        console.error("Firestore Index Error: The query requires an index. Please create it using this link:", 
+          `https://console.firebase.google.com/project/${import.meta.env.VITE_FIREBASE_PROJECT_ID}/firestore/indexes`);
+      }
     } finally {
       setIsHistoryLoading(false);
     }
@@ -86,15 +90,18 @@ const EcoTrackApp: React.FC = () => {
           const data = await analyzeWasteImage(base64);
           clearTimeout(timeout);
           setResult(data);
-          setLoading(false);
           
-          // Background save to Firestore (non-blocking)
+          // Save to Firestore before hiding loading state to ensure persistence
           const userId = auth.currentUser?.uid;
           if (userId) {
-            saveScanToFirestore(userId, base64, data).catch(err => {
-              console.error("Background save failed:", err);
-            });
+            try {
+              await saveScanToFirestore(userId, base64, data);
+            } catch (err) {
+              console.error("Firestore save failed:", err);
+            }
           }
+          
+          setLoading(false);
         } catch (err: any) {
           clearTimeout(timeout);
           setError(err.message);
