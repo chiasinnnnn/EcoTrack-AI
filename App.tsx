@@ -43,6 +43,9 @@ const EcoTrackApp: React.FC = () => {
   }, [user]);
 
   const onScanPressed = async () => {
+    // Automatically switch to Home page (index 0) to show the scan result
+    setCurrentIndex(0);
+
     // Check for camera availability
     try {
       const devices = await navigator.mediaDevices.enumerateDevices();
