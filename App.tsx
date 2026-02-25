@@ -47,13 +47,25 @@ const KitaroApp: React.FC = () => {
         setLoading(true);
         setResult(null);
         setError(null);
+
+        // Timeout safety: force loading off after 10s
+        const timeout = setTimeout(() => setLoading(false), 10000);
+
         try {
           const data = await analyzeWasteImage(base64);
+          clearTimeout(timeout);
           setResult(data);
-          if (user) await saveScanToFirestore(user.uid, base64, data);
+          setLoading(false);
+          
+          // Background save to Firestore (non-blocking)
+          if (user) {
+            saveScanToFirestore(user.uid, base64, data).catch(err => {
+              console.error("Background save failed:", err);
+            });
+          }
         } catch (err: any) {
+          clearTimeout(timeout);
           setError(err.message);
-        } finally {
           setLoading(false);
         }
       };
@@ -214,7 +226,7 @@ const KitaroApp: React.FC = () => {
               {/* Preview Widget */}
               <div className="relative rounded-[32px] overflow-hidden shadow-2xl aspect-[4/5] bg-gray-200 border-4 border-white">
                 <img src={image} className="w-full h-full object-cover" />
-                {loading && (
+                {(loading && !result) && (
                   <div className="absolute inset-0 bg-black/40 backdrop-blur-md flex flex-col items-center justify-center text-white p-8">
                     <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin mb-4"></div>
                     <p className="font-black text-xl tracking-tighter italic uppercase">AI Thinking...</p>
