@@ -21,6 +21,7 @@ const KitaroApp: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [location, setLocation] = useState<{lat: number, lng: number} | null>(null);
   const [isDetectingLocation, setIsDetectingLocation] = useState(false);
+  const [selectedBin, setSelectedBin] = useState<any | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -190,7 +191,7 @@ const KitaroApp: React.FC = () => {
                   <h3 className="font-bold text-gray-800">Recycling Guide</h3>
                   <i className="fas fa-chevron-right text-xs text-gray-400"></i>
                 </div>
-                <GuideCard />
+                <GuideCard onSelect={setSelectedBin} />
               </section>
 
               {/* Recent Activity List */}
@@ -309,11 +310,7 @@ const KitaroApp: React.FC = () => {
 
         {currentIndex === 2 && (
           <div className="page-transition space-y-8">
-            <h2 className="text-2xl font-black text-gray-900">Recycling Bins</h2>
-            <section className="space-y-4">
-              <h3 className="font-bold text-gray-800">Sorting Guide</h3>
-              <GuideCard />
-            </section>
+            <h2 className="text-2xl font-black text-gray-900">Nearby Centers</h2>
             
             <section className="space-y-4">
               <div className="flex items-center justify-between">
@@ -513,6 +510,71 @@ const KitaroApp: React.FC = () => {
           <span className="text-[10px] font-bold">Profile</span>
         </div>
       </nav>
+
+      {/* Bin Detail Modal */}
+      {selectedBin && (
+        <div className="fixed inset-0 z-[100] flex items-end justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-300">
+          <div className="w-full max-w-lg bg-white rounded-[40px] p-8 shadow-2xl animate-in slide-in-from-bottom-full duration-500">
+            <div className="flex justify-between items-start mb-8">
+              <div className={`w-20 h-20 ${selectedBin.bg} rounded-[32px] flex items-center justify-center border-4 border-white shadow-lg`}>
+                <i className={`fas ${selectedBin.icon} text-3xl text-gray-800`}></i>
+              </div>
+              <button 
+                onClick={() => setSelectedBin(null)}
+                className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-gray-200 transition-colors"
+              >
+                <i className="fas fa-times"></i>
+              </button>
+            </div>
+
+            <h3 className="text-3xl font-black text-gray-900 mb-2">{selectedBin.title}</h3>
+            <p className="text-gray-500 mb-8 leading-relaxed">Properly sorting your {selectedBin.title.toLowerCase()} helps Malaysia achieve its sustainability goals.</p>
+
+            <div className="grid grid-cols-1 gap-6 mb-10">
+              <div className="bg-emerald-50 rounded-3xl p-6 border border-emerald-100">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center text-white text-xs">
+                    <i className="fas fa-check"></i>
+                  </div>
+                  <h4 className="font-black text-emerald-900 uppercase tracking-widest text-xs">Dos</h4>
+                </div>
+                <ul className="space-y-2">
+                  {selectedBin.details.dos.map((doItem: string, i: number) => (
+                    <li key={i} className="text-sm text-emerald-800 flex items-start gap-2">
+                      <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-emerald-400 flex-shrink-0"></span>
+                      {doItem}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="bg-red-50 rounded-3xl p-6 border border-red-100">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center text-white text-xs">
+                    <i className="fas fa-xmark"></i>
+                  </div>
+                  <h4 className="font-black text-red-900 uppercase tracking-widest text-xs">Don'ts</h4>
+                </div>
+                <ul className="space-y-2">
+                  {selectedBin.details.donts.map((dontItem: string, i: number) => (
+                    <li key={i} className="text-sm text-red-800 flex items-start gap-2">
+                      <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-red-400 flex-shrink-0"></span>
+                      {dontItem}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            <button 
+              onClick={() => setSelectedBin(null)}
+              className="w-full py-5 bg-gray-900 text-white rounded-[24px] font-black uppercase tracking-widest text-xs shadow-xl active:scale-95 transition-transform"
+            >
+              Got it, thanks!
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
