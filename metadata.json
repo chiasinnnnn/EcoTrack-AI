@@ -1,5 +1,5 @@
 {
-  "name": "Kitaro - Malaysia Waste Identifier",
+  "name": "EcoTrack",
   "description": "An AI-powered recycling assistant for Malaysia that identifies waste materials and provides disposal rules according to the national Separation at Source (SAS) policy.",
   "requestFramePermissions": [
     "camera",

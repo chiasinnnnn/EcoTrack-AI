@@ -8,10 +8,10 @@ import { WasteAnalysis, HistoryItem } from './types';
 import GuideCard from './components/GuideCard';
 
 /**
- * Flutter Prototype: KitaroApp
+ * Flutter Prototype: EcoTrackApp
  * This component mirrors the structure of a Flutter StatefulWidget.
  */
-const KitaroApp: React.FC = () => {
+const EcoTrackApp: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
   const [image, setImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -151,7 +151,7 @@ const KitaroApp: React.FC = () => {
             <i className="fas fa-recycle text-xl"></i>
           </div>
           <div>
-            <h1 className="text-xl font-bold text-gray-900 tracking-tight">Kitaro</h1>
+            <h1 className="text-xl font-bold text-gray-900 tracking-tight">EcoTrack</h1>
             <p className="text-[10px] font-black text-[#006d3a] uppercase tracking-widest">Prototype v1.0</p>
           </div>
         </div>
@@ -595,4 +595,4 @@ const KitaroApp: React.FC = () => {
   );
 };
 
-export default KitaroApp;
+export default EcoTrackApp;
