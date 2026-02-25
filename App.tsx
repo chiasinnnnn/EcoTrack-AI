@@ -3,7 +3,7 @@ import { auth } from './services/firebase';
 import { onAuthStateChanged, User, signInWithPopup, signOut } from 'firebase/auth';
 import { googleProvider } from './services/firebase';
 import { analyzeWasteImage } from './services/geminiService';
-import { saveScanToFirestore, subscribeToUserHistory } from './services/firestoreService';
+import { saveScanToFirestore, subscribeToUserHistory, getHistoryFromFirestore } from './services/firestoreService';
 import { WasteAnalysis, HistoryItem } from './types';
 import GuideCard from './components/GuideCard';
 
@@ -18,6 +18,7 @@ const EcoTrackApp: React.FC = () => {
   const [result, setResult] = useState<WasteAnalysis | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [history, setHistory] = useState<HistoryItem[]>([]);
+  const [isHistoryLoading, setIsHistoryLoading] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [location, setLocation] = useState<{lat: number, lng: number} | null>(null);
   const [isDetectingLocation, setIsDetectingLocation] = useState(false);
@@ -29,8 +30,23 @@ const EcoTrackApp: React.FC = () => {
     return () => unsubscribe();
   }, []);
 
+  const loadUserStats = async (userId: string) => {
+    setIsHistoryLoading(true);
+    try {
+      const items = await getHistoryFromFirestore(userId);
+      setHistory(items);
+    } catch (err) {
+      console.error("Failed to load stats:", err);
+    } finally {
+      setIsHistoryLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (user) {
+      loadUserStats(user.uid);
+
+      // Real-time subscription for subsequent updates
       const unsubscribe = subscribeToUserHistory(user.uid, (items) => setHistory(items));
       return () => unsubscribe();
     }
@@ -73,8 +89,9 @@ const EcoTrackApp: React.FC = () => {
           setLoading(false);
           
           // Background save to Firestore (non-blocking)
-          if (user) {
-            saveScanToFirestore(user.uid, base64, data).catch(err => {
+          const userId = auth.currentUser?.uid;
+          if (userId) {
+            saveScanToFirestore(userId, base64, data).catch(err => {
               console.error("Background save failed:", err);
             });
           }
@@ -427,7 +444,12 @@ const EcoTrackApp: React.FC = () => {
         {currentIndex === 3 && (
           <div className="page-transition space-y-8">
             <h2 className="text-2xl font-black text-gray-900">My Profile</h2>
-            {user ? (
+            {isHistoryLoading ? (
+              <div className="flex flex-col items-center justify-center py-20 text-gray-400">
+                <div className="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+                <p className="font-bold uppercase tracking-widest text-[10px]">Loading your profile...</p>
+              </div>
+            ) : user ? (
               <div className="space-y-6">
                 <div className="flex items-center gap-4 bg-white p-6 rounded-[28px] border border-gray-100">
                   <img 

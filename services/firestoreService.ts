@@ -3,6 +3,7 @@ import { db } from "./firebase";
 import { 
   collection, 
   addDoc, 
+  getDocs,
   query, 
   where, 
   orderBy, 
@@ -27,12 +28,33 @@ export const saveScanToFirestore = async (userId: string, image: string, result:
   }
 };
 
+export const getHistoryFromFirestore = async (userId: string): Promise<HistoryItem[]> => {
+  try {
+    const q = query(
+      collection(db, COLLECTION_NAME),
+      where("userId", "==", userId),
+      orderBy("timestamp", "desc"),
+      limit(50)
+    );
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      timestamp: doc.data().timestamp.toMillis(),
+      image: doc.data().image,
+      result: doc.data().result
+    }));
+  } catch (error) {
+    console.error("Error fetching history:", error);
+    return [];
+  }
+};
+
 export const subscribeToUserHistory = (userId: string, callback: (items: HistoryItem[]) => void) => {
   const q = query(
     collection(db, COLLECTION_NAME),
     where("userId", "==", userId),
     orderBy("timestamp", "desc"),
-    limit(20)
+    limit(50)
   );
 
   return onSnapshot(q, (snapshot) => {
