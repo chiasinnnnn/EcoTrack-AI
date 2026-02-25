@@ -513,11 +513,25 @@ const KitaroApp: React.FC = () => {
 
       {/* Bin Detail Modal */}
       {selectedBin && (
-        <div className="fixed inset-0 z-[100] flex items-end justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-300">
-          <div className="w-full max-w-lg bg-white rounded-[40px] p-8 shadow-2xl animate-in slide-in-from-bottom-full duration-500">
-            <div className="flex justify-between items-start mb-8">
-              <div className={`w-20 h-20 ${selectedBin.bg} rounded-[32px] flex items-center justify-center border-4 border-white shadow-lg`}>
-                <i className={`fas ${selectedBin.icon} text-3xl text-gray-800`}></i>
+        <div 
+          className="fixed inset-0 z-[100] flex items-end justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in duration-300"
+          onClick={() => setSelectedBin(null)}
+        >
+          <div 
+            className="w-full max-w-lg bg-white rounded-[40px] shadow-2xl animate-in slide-in-from-bottom-full duration-500 overflow-hidden flex flex-col max-h-[85vh]"
+            onClick={(e) => e.stopPropagation()}
+            style={{ overscrollBehavior: 'contain' }}
+          >
+            {/* Sticky Header */}
+            <div className="sticky top-0 bg-white/80 backdrop-blur-md z-10 px-8 pt-8 pb-4 flex justify-between items-center border-b border-gray-50">
+              <div className="flex items-center gap-4">
+                <div className={`w-12 h-12 ${selectedBin.bg} rounded-2xl flex items-center justify-center border-2 border-white shadow-sm`}>
+                  <i className={`fas ${selectedBin.icon} text-xl text-gray-800`}></i>
+                </div>
+                <div>
+                  <h3 className="text-2xl font-black text-gray-900 leading-none">{selectedBin.title}</h3>
+                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">{selectedBin.color} Bin Guide</p>
+                </div>
               </div>
               <button 
                 onClick={() => setSelectedBin(null)}
@@ -527,51 +541,53 @@ const KitaroApp: React.FC = () => {
               </button>
             </div>
 
-            <h3 className="text-3xl font-black text-gray-900 mb-2">{selectedBin.title}</h3>
-            <p className="text-gray-500 mb-8 leading-relaxed">Properly sorting your {selectedBin.title.toLowerCase()} helps Malaysia achieve its sustainability goals.</p>
+            {/* Scrollable Content */}
+            <div className="flex-1 overflow-y-auto no-scrollbar p-8 pt-6">
+              <p className="text-gray-500 mb-8 leading-relaxed">Properly sorting your {selectedBin.title.toLowerCase()} helps Malaysia achieve its sustainability goals through the Separation at Source (SAS) policy.</p>
 
-            <div className="grid grid-cols-1 gap-6 mb-10">
-              <div className="bg-emerald-50 rounded-3xl p-6 border border-emerald-100">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center text-white text-xs">
-                    <i className="fas fa-check"></i>
+              <div className="grid grid-cols-1 gap-8 mb-10">
+                <div className="bg-emerald-50 rounded-[32px] p-8 border border-emerald-100 shadow-sm">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-10 h-10 bg-emerald-500 rounded-full flex items-center justify-center text-white shadow-md">
+                      <i className="fas fa-check"></i>
+                    </div>
+                    <h4 className="font-black text-emerald-900 uppercase tracking-widest text-sm">Dos</h4>
                   </div>
-                  <h4 className="font-black text-emerald-900 uppercase tracking-widest text-xs">Dos</h4>
+                  <ul className="space-y-4">
+                    {selectedBin.details.dos.map((doItem: string, i: number) => (
+                      <li key={i} className="text-sm text-emerald-800 flex items-start gap-3 font-medium">
+                        <span className="mt-2 w-2 h-2 rounded-full bg-emerald-400 flex-shrink-0"></span>
+                        {doItem}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-                <ul className="space-y-2">
-                  {selectedBin.details.dos.map((doItem: string, i: number) => (
-                    <li key={i} className="text-sm text-emerald-800 flex items-start gap-2">
-                      <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-emerald-400 flex-shrink-0"></span>
-                      {doItem}
-                    </li>
-                  ))}
-                </ul>
+
+                <div className="bg-red-50 rounded-[32px] p-8 border border-red-100 shadow-sm">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center text-white shadow-md">
+                      <i className="fas fa-xmark"></i>
+                    </div>
+                    <h4 className="font-black text-red-900 uppercase tracking-widest text-sm">Don'ts</h4>
+                  </div>
+                  <ul className="space-y-4">
+                    {selectedBin.details.donts.map((dontItem: string, i: number) => (
+                      <li key={i} className="text-sm text-red-800 flex items-start gap-3 font-medium">
+                        <span className="mt-2 w-2 h-2 rounded-full bg-red-400 flex-shrink-0"></span>
+                        {dontItem}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
 
-              <div className="bg-red-50 rounded-3xl p-6 border border-red-100">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center text-white text-xs">
-                    <i className="fas fa-xmark"></i>
-                  </div>
-                  <h4 className="font-black text-red-900 uppercase tracking-widest text-xs">Don'ts</h4>
-                </div>
-                <ul className="space-y-2">
-                  {selectedBin.details.donts.map((dontItem: string, i: number) => (
-                    <li key={i} className="text-sm text-red-800 flex items-start gap-2">
-                      <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-red-400 flex-shrink-0"></span>
-                      {dontItem}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              <button 
+                onClick={() => setSelectedBin(null)}
+                className="w-full py-5 bg-gray-900 text-white rounded-[24px] font-black uppercase tracking-widest text-xs shadow-xl active:scale-95 transition-transform mb-4"
+              >
+                Got it, thanks!
+              </button>
             </div>
-
-            <button 
-              onClick={() => setSelectedBin(null)}
-              className="w-full py-5 bg-gray-900 text-white rounded-[24px] font-black uppercase tracking-widest text-xs shadow-xl active:scale-95 transition-transform"
-            >
-              Got it, thanks!
-            </button>
           </div>
         </div>
       )}

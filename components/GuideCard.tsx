@@ -75,7 +75,10 @@ const GuideCard: React.FC<GuideCardProps> = ({ onSelect }) => {
       {bins.map((bin) => (
         <div 
           key={bin.color} 
-          onClick={() => onSelect?.(bin)}
+          onClick={(e) => {
+            e.stopPropagation();
+            onSelect?.(bin);
+          }}
           className={`${bin.bg} border ${bin.border} rounded-2xl p-3 text-center transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-sm`}
         >
           <div className={`mx-auto w-10 h-10 flex items-center justify-center rounded-full mb-2 ${bin.bg.replace('50', '200')}`}>
