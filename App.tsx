@@ -238,20 +238,23 @@ const EcoTrackApp: React.FC = () => {
                 <i className="fas fa-arrow-left px-2"></i>
               </button>
 
-              {/* Preview Widget */}
-              <div className="relative rounded-[32px] overflow-hidden shadow-2xl aspect-[4/5] bg-gray-200 border-4 border-white">
-                <img src={image} className="w-full h-full object-cover" />
-                {(loading && !result) && (
-                  <div className="absolute inset-0 bg-black/40 backdrop-blur-md flex flex-col items-center justify-center text-white p-8">
-                    <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin mb-4"></div>
-                    <p className="font-black text-xl tracking-tighter italic uppercase">AI Thinking...</p>
-                  </div>
-                )}
-              </div>
+              {/* Preview Widget / Loading State */}
+              {!result && (
+                <div className="relative rounded-[32px] overflow-hidden shadow-2xl aspect-[4/5] bg-gray-200 border-4 border-white">
+                  <img src={image!} className="w-full h-full object-cover" />
+                  {loading && (
+                    <div className="absolute inset-0 bg-black/40 backdrop-blur-md flex flex-col items-center justify-center text-white p-8">
+                      <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin mb-4"></div>
+                      <p className="font-black text-xl tracking-tighter italic uppercase">AI Thinking...</p>
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Result Widget */}
               {result && (
                 <div className="bg-white rounded-[28px] p-6 border border-gray-100 shadow-sm animate-in slide-in-from-bottom-4 duration-500">
+                  <img src={image!} className="h-48 w-auto mx-auto rounded-lg object-contain shadow-sm mb-4" />
                   <div className="flex justify-between items-start mb-6">
                     <div>
                       <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Detected</span>
