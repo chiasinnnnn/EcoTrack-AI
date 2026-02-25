@@ -36,7 +36,21 @@ const EcoTrackApp: React.FC = () => {
     }
   }, [user]);
 
-  const onScanPressed = () => fileInputRef.current?.click();
+  const onScanPressed = async () => {
+    // Check for camera availability
+    try {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const hasCamera = devices.some(device => device.kind === 'videoinput');
+      
+      if (!hasCamera && !/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+        alert("No camera detected. Please upload an image file instead.");
+      }
+    } catch (err) {
+      console.error("Error checking for camera:", err);
+    }
+    
+    fileInputRef.current?.click();
+  };
 
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
