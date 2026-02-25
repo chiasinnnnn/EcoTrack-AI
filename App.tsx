@@ -420,8 +420,10 @@ const KitaroApp: React.FC = () => {
                     <p className="text-4xl font-black">{history.length}</p>
                   </div>
                   <div className="bg-white p-6 rounded-[28px] border border-gray-100">
-                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Eco Level</p>
-                    <p className="text-4xl font-black text-emerald-600">Lvl 1</p>
+                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Recycled</p>
+                    <p className="text-4xl font-black text-emerald-600">
+                      {history.filter(item => item.result.recyclable).length}
+                    </p>
                   </div>
                 </div>
 

@@ -1,45 +1,51 @@
 
-import { GoogleGenerativeAI } from "@google/generative-ai";
+const MATERIAL_ANALYSIS_SCHEMA = {
+  type: SchemaType.OBJECT,
+  properties: {
+    material: {
+      type: SchemaType.STRING,
+      description: "The name/type of the material identified (e.g., PET 1 Plastic, Aluminum, Cardboard).",
+    },
+    recyclable: {
+      type: SchemaType.BOOLEAN,
+      description: "Whether the item is recyclable according to Malaysian guidelines.",
+    },
+    instruction: {
+      type: SchemaType.STRING,
+      description: "Detailed disposal instructions strictly mentioning Malaysian SAS bin colors: Blue (Paper), Brown (Glass), Orange (Plastic/Metal).",
+    },
+    hazard_level: {
+      type: SchemaType.STRING,
+      description: "Risk level (Low, Medium, High) for disposal",
+    },
+  },
+  required: ["material", "recyclable", "instruction", "hazard_level"],
+};
+
+import { GoogleGenerativeAI, SchemaType } from "@google/generative-ai";
 import { WasteAnalysis } from "../types";
 
 export class GeminiService {
-  private static MATERIAL_ANALYSIS_SCHEMA = {
-    type: "object",
-    properties: {
-      material: {
-        type: "string",
-        description: "The name/type of the material identified (e.g., PET 1 Plastic, Aluminum, Cardboard).",
-      },
-      recyclable: {
-        type: "boolean",
-        description: "Whether the item is recyclable according to Malaysian guidelines.",
-      },
-      instruction: {
-        type: "string",
-        description: "Detailed disposal instructions strictly mentioning Malaysian SAS bin colors: Blue (Paper), Brown (Glass), Orange (Plastic/Metal).",
-      },
-      hazard_level: {
-        type: "string",
-        description: "Risk level (Low, Medium, High) for disposal",
-      },
-    },
-    required: ["material", "recyclable", "instruction", "hazard_level"],
-  };
-
   static async analyzeWasteImage(base64Image: string): Promise<WasteAnalysis> {
-    const apiKey = process.env.GEMINI_API_KEY || '';
+    const apiKey = import.meta.env.VITE_GEMINI_API_KEY || '';
     if (!apiKey) {
-      throw new Error("GEMINI_API_KEY is not configured. Please ensure it is set in your environment.");
+      throw new Error("VITE_GEMINI_API_KEY is not configured. Please ensure it is set in your environment.");
     }
 
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-flash",
-      generationConfig: {
-        responseMimeType: "application/json",
-        responseSchema: this.MATERIAL_ANALYSIS_SCHEMA as any,
-      },
-    });
+    let model;
+    try {
+      const genAI = new GoogleGenerativeAI(apiKey);
+      model = genAI.getGenerativeModel({
+        model: "gemini-1.5-flash",
+        generationConfig: {
+          responseMimeType: "application/json",
+          responseSchema: MATERIAL_ANALYSIS_SCHEMA,
+        },
+      });
+    } catch (modelError: any) {
+      console.error("Gemini Model Initialization Error:", modelError);
+      throw new Error(`Failed to initialize Gemini model: ${modelError.message || 'Unknown error'}`);
+    }
     
     const prompt = `
       Analyze this waste item for a user in Malaysia. 
@@ -56,12 +62,15 @@ export class GeminiService {
     `;
 
     try {
+      const [header, base64Data] = base64Image.split(",");
+      const mimeType = header.split(";")[0].split(":")[1] || "image/jpeg";
+
       const result = await model.generateContent([
         prompt,
         {
           inlineData: {
-            mimeType: "image/jpeg",
-            data: base64Image.split(",")[1],
+            mimeType,
+            data: base64Data,
           },
         },
       ]);
@@ -71,11 +80,15 @@ export class GeminiService {
         throw new Error("No response text received from the model.");
       }
       
-      const data = JSON.parse(text);
-      return data as WasteAnalysis;
-    } catch (error) {
-      console.error("Error analyzing image:", error);
-      throw new Error("Failed to analyze the image. Please try again.");
+      const analysisResult = JSON.parse(text);
+      return analysisResult as WasteAnalysis;
+    } catch (error: any) {
+      console.error("Gemini API Call Error:", error);
+      // Log more details if available from the Google SDK
+      if (error.response) {
+        console.error("Gemini API Response Error Data:", error.response);
+      }
+      throw new Error(`Failed to analyze the image: ${error.message || 'Unknown error'}`);
     }
   }
 }
