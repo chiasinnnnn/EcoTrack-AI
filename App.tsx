@@ -19,6 +19,8 @@ const KitaroApp: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [location, setLocation] = useState<{lat: number, lng: number} | null>(null);
+  const [isDetectingLocation, setIsDetectingLocation] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -58,6 +60,61 @@ const KitaroApp: React.FC = () => {
       reader.readAsDataURL(file);
     }
   };
+
+  useEffect(() => {
+    if (currentIndex === 2 && !location) {
+      detectLocation();
+    }
+  }, [currentIndex]);
+
+  const detectLocation = () => {
+    setIsDetectingLocation(true);
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setLocation({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          });
+          setIsDetectingLocation(false);
+        },
+        (error) => {
+          console.error("Error detecting location:", error);
+          setIsDetectingLocation(false);
+        }
+      );
+    } else {
+      setIsDetectingLocation(false);
+    }
+  };
+
+  const recyclingCenters = [
+    { name: 'IPC Shopping Centre RBBC', lat: 3.1578, lng: 101.6119, bins: ['Paper', 'Glass', 'Plastic', 'Metal'] },
+    { name: 'PJ Eco Recycling Plaza', lat: 3.0864, lng: 101.6385, bins: ['Paper', 'Plastic', 'Metal', 'E-waste'] },
+    { name: 'Cyberjaya Recycling Centre', lat: 2.9220, lng: 101.6560, bins: ['Paper', 'Glass', 'Plastic'] },
+    { name: 'Subang Jaya Community RC', lat: 3.0483, lng: 101.5852, bins: ['Paper', 'Metal'] },
+    { name: 'Shah Alam Recycling Centre', lat: 3.0733, lng: 101.5185, bins: ['Paper', 'Glass', 'Plastic', 'Metal'] },
+    { name: 'Putrajaya RC (Precinct 9)', lat: 2.9431, lng: 101.6765, bins: ['Paper', 'Plastic', 'Metal'] },
+  ];
+
+  const getDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
+    const R = 6371;
+    const dLat = (lat2 - lat1) * (Math.PI / 180);
+    const dLon = (lon2 - lon1) * (Math.PI / 180);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  };
+
+  const sortedCenters = location 
+    ? recyclingCenters
+        .map(c => ({ ...c, distance: getDistance(location.lat, location.lng, c.lat, c.lng) }))
+        .sort((a, b) => a.distance - b.distance)
+        .slice(0, 3)
+    : [];
 
   // UI Helper: Mapping instruction to M3 Tonal Colors
   const getBinColor = (instruction: string) => {
@@ -245,8 +302,80 @@ const KitaroApp: React.FC = () => {
               <h3 className="font-bold text-gray-800">Sorting Guide</h3>
               <GuideCard />
             </section>
+            
             <section className="space-y-4">
-              <h3 className="font-bold text-gray-800">Search for Bins</h3>
+              <div className="flex items-center justify-between">
+                <h3 className="font-bold text-gray-800">Nearest to You</h3>
+                <button 
+                  onClick={detectLocation}
+                  className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest flex items-center gap-1"
+                >
+                  <i className={`fas fa-arrows-rotate ${isDetectingLocation ? 'animate-spin' : ''}`}></i>
+                  Refresh
+                </button>
+              </div>
+
+              {isDetectingLocation ? (
+                <div className="py-12 flex flex-col items-center justify-center text-gray-400 gap-3">
+                  <div className="w-8 h-8 border-4 border-emerald-100 border-t-emerald-500 rounded-full animate-spin"></div>
+                  <p className="text-xs font-bold uppercase tracking-widest">Detecting Location...</p>
+                </div>
+              ) : location ? (
+                <div className="space-y-3">
+                  {sortedCenters.map((center, i) => (
+                    <div key={i} className="bg-white p-5 rounded-[28px] border border-gray-100 shadow-sm space-y-4">
+                      <div className="flex justify-between items-start">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-600">
+                            <i className="fas fa-location-dot"></i>
+                          </div>
+                          <div>
+                            <h4 className="font-bold text-gray-900 leading-tight">{center.name}</h4>
+                            <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">{center.distance.toFixed(1)} KM AWAY</p>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="flex flex-wrap gap-2">
+                        {center.bins.map(bin => (
+                          <span key={bin} className={`px-2 py-1 rounded-md text-[8px] font-black text-white uppercase ${
+                            bin === 'Paper' ? 'bg-blue-600' : 
+                            bin === 'Glass' ? 'bg-[#5d4037]' : 
+                            bin === 'Plastic' || bin === 'Metal' ? 'bg-orange-500' : 
+                            'bg-emerald-600'
+                          }`}>
+                            {bin}
+                          </span>
+                        ))}
+                      </div>
+
+                      <a 
+                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(center.name)}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="flex items-center justify-center w-full py-3 bg-gray-50 rounded-xl text-xs font-bold text-gray-600 hover:bg-gray-100 transition-colors gap-2"
+                      >
+                        <i className="fas fa-map"></i>
+                        VIEW ON MAPS
+                      </a>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="py-12 text-center bg-gray-50 rounded-[28px] border border-dashed border-gray-200">
+                  <p className="text-sm text-gray-500 mb-4 px-8">Enable location access to find recycling centers near you.</p>
+                  <button 
+                    onClick={detectLocation}
+                    className="bg-emerald-600 text-white px-6 py-2 rounded-full text-xs font-bold shadow-md"
+                  >
+                    ALLOW LOCATION
+                  </button>
+                </div>
+              )}
+            </section>
+
+            <section className="space-y-4">
+              <h3 className="font-bold text-gray-800">All Centers</h3>
               <div className="space-y-3">
                 {[
                   'Subang Jaya Community Recycling Center',
