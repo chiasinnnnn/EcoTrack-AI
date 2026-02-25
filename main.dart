@@ -8,10 +8,10 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:convert';
 import 'dart:typed_data';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env"); // Load the API key
   await Firebase.initializeApp();
-  await dotenv.load(fileName: ".env");
   runApp(const KitaroApp());
 }
 

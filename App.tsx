@@ -104,102 +104,214 @@ const KitaroApp: React.FC = () => {
 
       {/* Body Widget */}
       <main className="flex-1 px-6 pb-32 overflow-y-auto no-scrollbar">
-        {!image ? (
-          <div className="page-transition space-y-8">
-            {/* Banner Section */}
-            <div className="bg-[#e8f5e9] rounded-[28px] p-8 text-center border border-[#c8e6c9]">
-              <h2 className="text-2xl font-black text-[#1b5e20] mb-2">Sustainable Malaysia</h2>
-              <p className="text-sm text-[#2e7d32] font-medium leading-relaxed">
-                Empowering communities with AI-driven Separation at Source (SAS) identification.
-              </p>
-            </div>
-
-            {/* Dashboard Content */}
-            <section className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="font-bold text-gray-800">Recycling Guide</h3>
-                <i className="fas fa-chevron-right text-xs text-gray-400"></i>
+        {currentIndex === 0 && (
+          !image ? (
+            <div className="page-transition space-y-8">
+              {/* Banner Section */}
+              <div className="bg-[#e8f5e9] rounded-[28px] p-8 text-center border border-[#c8e6c9]">
+                <h2 className="text-2xl font-black text-[#1b5e20] mb-2">Sustainable Malaysia</h2>
+                <p className="text-sm text-[#2e7d32] font-medium leading-relaxed">
+                  Empowering communities with AI-driven Separation at Source (SAS) identification.
+                </p>
               </div>
-              <GuideCard />
-            </section>
 
-            {/* Recent Activity List */}
-            {history.length > 0 && (
+              {/* Dashboard Content */}
               <section className="space-y-4">
-                <h3 className="font-bold text-gray-800">Recent Scans</h3>
-                <div className="flex gap-4 overflow-x-auto no-scrollbar pb-4 snap-x">
-                  {history.slice(0, 5).map(item => (
-                    <div 
-                      key={item.id} 
-                      onClick={() => { setImage(item.image); setResult(item.result); }}
-                      className="snap-start flex-shrink-0 w-32 group cursor-pointer"
-                    >
-                      <div className="aspect-square rounded-3xl overflow-hidden border-2 border-white shadow-md group-hover:scale-105 transition-transform">
-                        <img src={item.image} className="w-full h-full object-cover" />
-                      </div>
-                      <p className="text-[10px] font-black mt-2 truncate text-center uppercase tracking-tighter">{item.result.material}</p>
-                    </div>
-                  ))}
+                <div className="flex items-center justify-between">
+                  <h3 className="font-bold text-gray-800">Recycling Guide</h3>
+                  <i className="fas fa-chevron-right text-xs text-gray-400"></i>
                 </div>
+                <GuideCard />
               </section>
-            )}
-          </div>
-        ) : (
-          <div className="page-transition space-y-6">
-            <button 
-              onClick={() => { setImage(null); setResult(null); setError(null); }}
-              className="p-2 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200"
-            >
-              <i className="fas fa-arrow-left px-2"></i>
-            </button>
 
-            {/* Preview Widget */}
-            <div className="relative rounded-[32px] overflow-hidden shadow-2xl aspect-[4/5] bg-gray-200 border-4 border-white">
-              <img src={image} className="w-full h-full object-cover" />
-              {loading && (
-                <div className="absolute inset-0 bg-black/40 backdrop-blur-md flex flex-col items-center justify-center text-white p-8">
-                  <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin mb-4"></div>
-                  <p className="font-black text-xl tracking-tighter italic uppercase">AI Thinking...</p>
+              {/* Recent Activity List */}
+              {history.length > 0 && (
+                <section className="space-y-4">
+                  <h3 className="font-bold text-gray-800">Recent Scans</h3>
+                  <div className="flex gap-4 overflow-x-auto no-scrollbar pb-4 snap-x">
+                    {history.slice(0, 5).map(item => (
+                      <div 
+                        key={item.id} 
+                        onClick={() => { setImage(item.image); setResult(item.result); }}
+                        className="snap-start flex-shrink-0 w-32 group cursor-pointer"
+                      >
+                        <div className="aspect-square rounded-3xl overflow-hidden border-2 border-white shadow-md group-hover:scale-105 transition-transform">
+                          <img src={item.image} className="w-full h-full object-cover" />
+                        </div>
+                        <p className="text-[10px] font-black mt-2 truncate text-center uppercase tracking-tighter">{item.result.material}</p>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              )}
+            </div>
+          ) : (
+            <div className="page-transition space-y-6">
+              <button 
+                onClick={() => { setImage(null); setResult(null); setError(null); }}
+                className="p-2 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200"
+              >
+                <i className="fas fa-arrow-left px-2"></i>
+              </button>
+
+              {/* Preview Widget */}
+              <div className="relative rounded-[32px] overflow-hidden shadow-2xl aspect-[4/5] bg-gray-200 border-4 border-white">
+                <img src={image} className="w-full h-full object-cover" />
+                {loading && (
+                  <div className="absolute inset-0 bg-black/40 backdrop-blur-md flex flex-col items-center justify-center text-white p-8">
+                    <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin mb-4"></div>
+                    <p className="font-black text-xl tracking-tighter italic uppercase">AI Thinking...</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Result Widget */}
+              {result && (
+                <div className="bg-white rounded-[28px] p-6 border border-gray-100 shadow-sm animate-in slide-in-from-bottom-4 duration-500">
+                  <div className="flex justify-between items-start mb-6">
+                    <div>
+                      <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Detected</span>
+                      <h3 className="text-3xl font-black text-gray-900 leading-none mt-1">{result.material}</h3>
+                    </div>
+                    <div className="flex flex-col items-end gap-2">
+                      <div className={`px-4 py-2 rounded-full text-[10px] font-black ${result.recyclable ? 'bg-emerald-100 text-emerald-700' : 'bg-red-50 text-red-600'}`}>
+                        {result.recyclable ? 'RECYCLABLE' : 'RESIDUAL'}
+                      </div>
+                      <div className={`px-3 py-1 rounded-full text-[8px] font-bold border ${
+                        result.hazard_level === 'High' ? 'border-red-200 bg-red-50 text-red-700' : 
+                        result.hazard_level === 'Medium' ? 'border-amber-200 bg-amber-50 text-amber-700' : 
+                        'border-blue-200 bg-blue-50 text-blue-700'
+                      }`}>
+                        {result.hazard_level.toUpperCase()} HAZARD
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className={`${getBinColor(result.instruction)} rounded-2xl p-5 text-white flex gap-4 shadow-lg ring-4 ring-white`}>
+                    <i className="fas fa-location-arrow text-2xl opacity-50"></i>
+                    <div>
+                      <p className="text-[10px] font-black opacity-80 uppercase tracking-widest mb-1">SAS Disposal Action</p>
+                      <p className="text-lg font-bold leading-tight">{result.instruction}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {error && (
+                <div className="bg-red-50 p-6 rounded-[28px] text-center border border-red-100">
+                  <i className="fas fa-circle-exclamation text-2xl text-red-400 mb-2"></i>
+                  <p className="font-bold text-red-700">{error}</p>
                 </div>
               )}
             </div>
+          )
+        )}
 
-            {/* Result Widget */}
-            {result && (
-              <div className="bg-white rounded-[28px] p-6 border border-gray-100 shadow-sm animate-in slide-in-from-bottom-4 duration-500">
-                <div className="flex justify-between items-start mb-6">
-                  <div>
-                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Detected</span>
-                    <h3 className="text-3xl font-black text-gray-900 leading-none mt-1">{result.material}</h3>
-                  </div>
-                  <div className="flex flex-col items-end gap-2">
-                    <div className={`px-4 py-2 rounded-full text-[10px] font-black ${result.recyclable ? 'bg-emerald-100 text-emerald-700' : 'bg-red-50 text-red-600'}`}>
-                      {result.recyclable ? 'RECYCLABLE' : 'RESIDUAL'}
+        {currentIndex === 1 && (
+          <div className="page-transition space-y-6">
+            <h2 className="text-2xl font-black text-gray-900">Scan History</h2>
+            {history.length > 0 ? (
+              <div className="space-y-3">
+                {history.map((item) => (
+                  <div 
+                    key={item.id}
+                    onClick={() => { setImage(item.image); setResult(item.result); setCurrentIndex(0); }}
+                    className="bg-white p-3 rounded-2xl border border-gray-100 flex items-center gap-4 cursor-pointer hover:shadow-md transition-shadow"
+                  >
+                    <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0">
+                      <img src={item.image} className="w-full h-full object-cover" />
                     </div>
-                    <div className={`px-3 py-1 rounded-full text-[8px] font-bold border ${
-                      result.hazard_level === 'High' ? 'border-red-200 bg-red-50 text-red-700' : 
-                      result.hazard_level === 'Medium' ? 'border-amber-200 bg-amber-50 text-amber-700' : 
-                      'border-blue-200 bg-blue-50 text-blue-700'
-                    }`}>
-                      {result.hazard_level.toUpperCase()} HAZARD
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-bold text-gray-900 truncate uppercase tracking-tight">{item.result.material}</h4>
+                      <p className="text-xs text-gray-500">{new Date(item.timestamp).toLocaleDateString()}</p>
                     </div>
+                    <div className={`w-2 h-2 rounded-full ${item.result.recyclable ? 'bg-emerald-500' : 'bg-red-500'}`}></div>
                   </div>
-                </div>
-
-                <div className={`${getBinColor(result.instruction)} rounded-2xl p-5 text-white flex gap-4 shadow-lg ring-4 ring-white`}>
-                  <i className="fas fa-location-arrow text-2xl opacity-50"></i>
-                  <div>
-                    <p className="text-[10px] font-black opacity-80 uppercase tracking-widest mb-1">SAS Disposal Action</p>
-                    <p className="text-lg font-bold leading-tight">{result.instruction}</p>
-                  </div>
-                </div>
+                ))}
+              </div>
+            ) : (
+              <div className="py-20 text-center text-gray-400">
+                <i className="fas fa-history text-4xl mb-4 opacity-20"></i>
+                <p>No scans yet. Start identifying waste!</p>
               </div>
             )}
+          </div>
+        )}
 
-            {error && (
-              <div className="bg-red-50 p-6 rounded-[28px] text-center border border-red-100">
-                <i className="fas fa-circle-exclamation text-2xl text-red-400 mb-2"></i>
-                <p className="font-bold text-red-700">{error}</p>
+        {currentIndex === 2 && (
+          <div className="page-transition space-y-8">
+            <h2 className="text-2xl font-black text-gray-900">Recycling Bins</h2>
+            <section className="space-y-4">
+              <h3 className="font-bold text-gray-800">Sorting Guide</h3>
+              <GuideCard />
+            </section>
+            <section className="space-y-4">
+              <h3 className="font-bold text-gray-800">Search for Bins</h3>
+              <div className="space-y-3">
+                {[
+                  'Subang Jaya Community Recycling Center',
+                  'Petaling Jaya Waste Management Hub',
+                  'Kuala Lumpur Eco-Park Collection Point',
+                  'Shah Alam Green Initiative Center'
+                ].map((center, i) => (
+                  <div key={i} className="bg-white p-4 rounded-2xl border border-gray-100 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-emerald-50 rounded-full flex items-center justify-center text-emerald-600">
+                        <i className="fas fa-location-dot"></i>
+                      </div>
+                      <span className="text-sm font-medium text-gray-700">{center}</span>
+                    </div>
+                    <i className="fas fa-arrow-up-right-from-square text-xs text-gray-300"></i>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </div>
+        )}
+
+        {currentIndex === 3 && (
+          <div className="page-transition space-y-8">
+            <h2 className="text-2xl font-black text-gray-900">My Profile</h2>
+            {user ? (
+              <div className="space-y-6">
+                <div className="flex items-center gap-4 bg-white p-6 rounded-[28px] border border-gray-100">
+                  <img 
+                    src={user.photoURL || ''} 
+                    className="w-20 h-20 rounded-full border-4 border-emerald-50"
+                  />
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-900">{user.displayName}</h3>
+                    <p className="text-sm text-gray-500">{user.email}</p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-emerald-600 p-6 rounded-[28px] text-white">
+                    <p className="text-[10px] font-black uppercase tracking-widest opacity-80 mb-1">Total Scans</p>
+                    <p className="text-4xl font-black">{history.length}</p>
+                  </div>
+                  <div className="bg-white p-6 rounded-[28px] border border-gray-100">
+                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Eco Level</p>
+                    <p className="text-4xl font-black text-emerald-600">Lvl 1</p>
+                  </div>
+                </div>
+
+                <button 
+                  onClick={() => signOut(auth)}
+                  className="w-full py-4 rounded-2xl border-2 border-red-50 text-red-500 font-bold hover:bg-red-50 transition-colors"
+                >
+                  Sign Out
+                </button>
+              </div>
+            ) : (
+              <div className="py-20 text-center">
+                <p className="text-gray-500 mb-4">Sign in to track your recycling progress</p>
+                <button 
+                  onClick={() => signInWithPopup(auth, googleProvider)}
+                  className="bg-[#99f6b4] text-[#00210d] px-8 py-3 rounded-full font-bold shadow-lg"
+                >
+                  SIGN IN
+                </button>
               </div>
             )}
           </div>
