@@ -78,6 +78,8 @@ const EcoTrackApp: React.FC = () => {
         try {
           const data = await analyzeWasteImage(base64);
           clearTimeout(timeout);
+          
+          // Batch updates for immediate feedback
           setResult(data);
           setLoading(false);
           
@@ -261,51 +263,53 @@ const EcoTrackApp: React.FC = () => {
                 <i className="fas fa-arrow-left px-2"></i>
               </button>
 
-              {/* Preview Widget / Loading State */}
-              {!result && (
-                <div className="relative rounded-[32px] overflow-hidden shadow-2xl aspect-[4/5] bg-gray-200 border-4 border-white">
+              {/* Preview & Result Container */}
+              <div className="relative bg-white rounded-[32px] overflow-hidden shadow-2xl border-4 border-white transition-all duration-300">
+                {/* Image Display - Stays consistent */}
+                <div className={`${result ? 'h-48' : 'aspect-[4/5]'} transition-all duration-500 ease-out overflow-hidden`}>
                   <img src={image!} className="w-full h-full object-cover" />
-                  {loading && (
-                    <div className="absolute inset-0 bg-black/40 backdrop-blur-md flex flex-col items-center justify-center text-white p-8">
-                      <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin mb-4"></div>
-                      <p className="font-black text-xl tracking-tighter italic uppercase">AI Thinking...</p>
-                    </div>
-                  )}
                 </div>
-              )}
 
-              {/* Result Widget */}
-              {result && (
-                <div className="bg-white rounded-[28px] p-6 border border-gray-100 shadow-sm animate-in slide-in-from-bottom-4 duration-500">
-                  <img src={image!} className="h-48 w-auto mx-auto rounded-lg object-contain shadow-sm mb-4" />
-                  <div className="flex justify-between items-start mb-6">
-                    <div>
-                      <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Detected</span>
-                      <h3 className="text-3xl font-black text-gray-900 leading-none mt-1">{result.material}</h3>
-                    </div>
-                    <div className="flex flex-col items-end gap-2">
-                      <div className={`px-4 py-2 rounded-full text-[10px] font-black ${result.recyclable ? 'bg-emerald-100 text-emerald-700' : 'bg-red-50 text-red-600'}`}>
-                        {result.recyclable ? 'RECYCLABLE' : 'RESIDUAL'}
+                {/* Loading Overlay */}
+                {loading && (
+                  <div className="absolute inset-0 bg-black/40 backdrop-blur-md flex flex-col items-center justify-center text-white p-8 z-20">
+                    <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin mb-4"></div>
+                    <p className="font-black text-xl tracking-tighter italic uppercase">AI Thinking...</p>
+                  </div>
+                )}
+
+                {/* Result Details - Pops out immediately */}
+                {result && (
+                  <div className="p-6 animate-in fade-in zoom-in slide-in-from-top-2 duration-300 ease-out">
+                    <div className="flex justify-between items-start mb-6">
+                      <div>
+                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Detected</span>
+                        <h3 className="text-3xl font-black text-gray-900 leading-none mt-1">{result.material}</h3>
                       </div>
-                      <div className={`px-3 py-1 rounded-full text-[8px] font-bold border ${
-                        result.hazard_level === 'High' ? 'border-red-200 bg-red-50 text-red-700' : 
-                        result.hazard_level === 'Medium' ? 'border-amber-200 bg-amber-50 text-amber-700' : 
-                        'border-blue-200 bg-blue-50 text-blue-700'
-                      }`}>
-                        {result.hazard_level.toUpperCase()} HAZARD
+                      <div className="flex flex-col items-end gap-2">
+                        <div className={`px-4 py-2 rounded-full text-[10px] font-black ${result.recyclable ? 'bg-emerald-100 text-emerald-700' : 'bg-red-50 text-red-600'}`}>
+                          {result.recyclable ? 'RECYCLABLE' : 'RESIDUAL'}
+                        </div>
+                        <div className={`px-3 py-1 rounded-full text-[8px] font-bold border ${
+                          result.hazard_level === 'High' ? 'border-red-200 bg-red-50 text-red-700' : 
+                          result.hazard_level === 'Medium' ? 'border-amber-200 bg-amber-50 text-amber-700' : 
+                          'border-blue-200 bg-blue-50 text-blue-700'
+                        }`}>
+                          {result.hazard_level.toUpperCase()} HAZARD
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className={`${getBinColor(result.instruction)} rounded-2xl p-5 text-white flex gap-4 shadow-lg ring-4 ring-white`}>
+                      <i className="fas fa-location-arrow text-2xl opacity-50"></i>
+                      <div>
+                        <p className="text-[10px] font-black opacity-80 uppercase tracking-widest mb-1">SAS Disposal Action</p>
+                        <p className="text-lg font-bold leading-tight">{result.instruction}</p>
                       </div>
                     </div>
                   </div>
-
-                  <div className={`${getBinColor(result.instruction)} rounded-2xl p-5 text-white flex gap-4 shadow-lg ring-4 ring-white`}>
-                    <i className="fas fa-location-arrow text-2xl opacity-50"></i>
-                    <div>
-                      <p className="text-[10px] font-black opacity-80 uppercase tracking-widest mb-1">SAS Disposal Action</p>
-                      <p className="text-lg font-bold leading-tight">{result.instruction}</p>
-                    </div>
-                  </div>
-                </div>
-              )}
+                )}
+              </div>
 
               {error && (
                 <div className="bg-red-50 p-6 rounded-[28px] text-center border border-red-100">
