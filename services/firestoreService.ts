@@ -70,14 +70,23 @@ export const getHistoryFromFirestore = async (userId: string): Promise<HistoryIt
       limit(50)
     );
     const querySnapshot = await getDocs(q);
-    const items = querySnapshot.docs.map(doc => ({
+    const remoteItems = querySnapshot.docs.map(doc => ({
       id: doc.id,
       timestamp: doc.data().timestamp.toMillis(),
       image: doc.data().image,
       result: doc.data().result
     }));
     
-    return items.length > 0 ? items : getLocalHistory();
+    const localItems = getLocalHistory();
+    const merged = [...remoteItems];
+    localItems.forEach(local => {
+      if (!remoteItems.some(remote => remote.image === local.image)) {
+        merged.push(local);
+      }
+    });
+    merged.sort((a, b) => b.timestamp - a.timestamp);
+    
+    return merged.slice(0, 50);
   } catch (error: any) {
     if (error.code === 'permission-denied') {
       isFirestoreAvailable = false;
@@ -104,13 +113,28 @@ export const subscribeToUserHistory = (userId: string, callback: (items: History
 
   return onSnapshot(q, {
     next: (snapshot) => {
-      const items: HistoryItem[] = snapshot.docs.map(doc => ({
+      const remoteItems: HistoryItem[] = snapshot.docs.map(doc => ({
         id: doc.id,
         timestamp: doc.data().timestamp.toMillis(),
         image: doc.data().image,
         result: doc.data().result
       }));
-      callback(items.length > 0 ? items : getLocalHistory());
+      
+      const localItems = getLocalHistory();
+      
+      // Merge: Keep all remote items, and add local items that aren't in remote yet (by image matching)
+      const merged = [...remoteItems];
+      localItems.forEach(local => {
+        const isAlreadyInRemote = remoteItems.some(remote => remote.image === local.image);
+        if (!isAlreadyInRemote) {
+          merged.push(local);
+        }
+      });
+      
+      // Sort by timestamp desc
+      merged.sort((a, b) => b.timestamp - a.timestamp);
+      
+      callback(merged.slice(0, 50));
     },
     error: (error: any) => {
       if (error.code === 'permission-denied') {

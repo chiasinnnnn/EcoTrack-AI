@@ -83,6 +83,14 @@ const EcoTrackApp: React.FC = () => {
           setResult(data);
           setLoading(false);
           
+          // Background save to Firestore (non-blocking)
+          const userId = auth.currentUser?.uid;
+          if (userId) {
+            saveScanToFirestore(userId, base64, data).catch(err => {
+              console.error("Background save failed:", err);
+            });
+          }
+
           // Optimistic update for immediate UI feedback (Counters & History)
           const newItem: HistoryItem = {
             id: `temp_${Date.now()}`,
@@ -91,18 +99,10 @@ const EcoTrackApp: React.FC = () => {
             result: data
           };
           setHistory(prev => {
-            // Avoid duplicates if subscription already fired
+            // Avoid duplicates if subscription already fired or local save already picked up
             if (prev.some(item => item.image === base64)) return prev;
             return [newItem, ...prev].slice(0, 50);
           });
-          
-          // Background save to Firestore (non-blocking)
-          const userId = auth.currentUser?.uid;
-          if (userId) {
-            saveScanToFirestore(userId, base64, data).catch(err => {
-              console.error("Background save failed:", err);
-            });
-          }
         } catch (err: any) {
           clearTimeout(timeout);
           setError(err.message);
@@ -225,6 +225,20 @@ const EcoTrackApp: React.FC = () => {
               </div>
 
               {/* Dashboard Content */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-white p-5 rounded-[28px] border border-gray-100 shadow-sm">
+                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Total Scans</p>
+                  <p className="text-3xl font-black text-gray-900">{history.length}</p>
+                </div>
+                <div className="bg-emerald-50 p-5 rounded-[28px] border border-emerald-100 shadow-sm">
+                  <p className="text-[10px] font-black text-emerald-600/60 uppercase tracking-widest mb-1">Recycled</p>
+                  <p className="text-3xl font-black text-emerald-600">
+                    {history.filter(item => item.result.recyclable).length}
+                  </p>
+                </div>
+              </div>
+
+              {/* Recycling Guide Section */}
               <section className="space-y-4">
                 <div className="flex items-center justify-between">
                   <h3 className="font-bold text-gray-800">Recycling Guide</h3>
