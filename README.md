@@ -284,61 +284,85 @@ This caused markdown-wrapped JSON (\`\`\`json blocks), extra explanations before
 ### Final Solution  
 We pivoted to Gemini's native Controlled Generation feature by passing a responseSchema and setting responseMimeType: "application/json" directly in the SDK config. This instructs the model at the API level (not just via prompt) to return pure, schema-validated JSON with no markdown. The Google API itself guarantees the output format at the source.  
 In services/geminiService.ts, our final schema definition looks like this:
+```javascript
+const MATERIAL_ANALYSIS_SCHEMA = {
+  type: Type.OBJECT,
+  properties: {
+    items: {
+      type: Type.ARRAY,
+      description: "List of waste items identified in the image.",
+      items: {
+        type: Type.OBJECT,
+        properties: {
+          material: {
+            type: Type.STRING,
+            description: "The name/type of the material identified (e.g., PET 1 Plastic, Aluminum, Cardboard).",
+          },
+          recyclable: {
+            type: Type.BOOLEAN,
+            description: "Whether the item is recyclable according to Malaysian guidelines.",
+          },
+          instruction: {
+            type: Type.STRING,
+            description: "Detailed disposal instructions strictly mentioning Malaysian SAS bin colors: Blue (Paper), Brown (Glass), Orange (Plastic/Metal).",
+          },
+          hazard_level: {
+            type: Type.STRING,
+            description: "Risk level (Low, Medium, High) for disposal",
+          },
+        },
+        required: ["material", "recyclable", "instruction", "hazard_level"],
+      },
+    },
+  },
+  required: ["items"],
+};
 
-
-
-# **Implementation Challenges**
-
-## Challenge 1: Inconsistent & Unstructured AI Responses
-
-One of the most significant technical challenges we faced was inconsistent and unstructured AI responses from the Gemini Vision model. Our frontend expected a strict, predictable JSON shape to render the result card, but during early testing Gemini frequently returned markdown-wrapped blocks, added conversational preambles before the JSON, used inconsistent key names like "Plastic Type" instead of materialType, and sometimes omitted fields entirely when scanning ambiguous or cluttered images. Because our App.tsx directly destructures the response to populate the UI result card, a single invalid response caused a runtime crash and broke our core promise of instant disposal guidance.
-
-We needed Gemini to return a strictly structured response:
-
-{  
-  "itemName": “”,  
-  "materialType": "",  
-  "materialCode": "",  
-  "recyclable": "",  
-  "instructions": ""  
-}
-
-**Why It Was Challenging**  
-Unlike traditional REST APIs, large language models are probabilistic. Even an explicit "return only JSON" instruction in the prompt cannot guarantee structural reply. The model may deviate under network latency spikes, longer responses, or when the image is unclear and the model attempts to "explain" its uncertainty in plain text.
-
-Our initial approach in services/geminiService.ts used a plain text prompt:  
-"Identify this item and return JSON with item name, material, recyclability and instructions."
-
-This caused markdown-wrapped JSON (\`\`\`json blocks), extra explanations before the object, and inconsistent key names. All caused failed parsing and JSON.parse() to throw and the result card to never render.
-
-**Final Solution**  
-We pivoted to Gemini's native Controlled Generation feature by passing a responseSchema and setting responseMimeType: "application/json" directly in the SDK config. This instructs the model at the API level (not just via prompt) to return pure, schema-validated JSON with no markdown. The Google API itself guarantees the output format at the source.  
-In services/geminiService.ts, our final schema definition looks like this:
-
-![][image1]
+```
 
 We also added a try/catch block in App.tsx with a defensive fallback. If parsing still fails for any reason, the UI displays a graceful error state rather than crashing:
+```javascript
+try {
+          const data = await analyzeWasteImage(base64);
+          clearTimeout(timeout);
+          
+          // Batch updates for immediate feedback
+          setResult({ ...data, timestamp: Date.now() } as any);
+          setLoading(false);
+}
 
-![][image2]  
-![][image3]  
-(code snippet of try/catch block )
+catch (err: any) {
+          clearTimeout(timeout);
+          setError(err.message);
+          setLoading(false);
+}
 
-## Challenge 2: Collaborative State & Version Control Synchronization
+```
+### 🚧 Challenge 2: Collaborative State & Version Control Synchronization
+A persistent operational challenge was the lack of true synchronization between **Google AI Studio** and **GitHub**. While AI Studio offers a "Save to GitHub" feature, it functions as a one-way push mechanism. 
 
-A persistent operational challenge throughout development was the lack of true synchronization between Google AI Studio and GitHub. While AI Studio provides a "Save to GitHub" feature, it functions as a one-way push mechanism. When multiple team members tried to work on the same project simultaneously, we encountered an issue: if one member pushed a change from AI Studio to GitHub, the other member's local AI Studio environment would not automatically reflect the updated code. When the second member then attempted to save their own work, AI Studio would frequently create a conflicting copy or a divergent branch rather than merging the changes. This fragmented our codebase and forced manual reconciliation of App.tsx and services/geminiService.ts across sessions.
+**The Conflict:** When multiple members worked simultaneously, AI Studio would create divergent branches or conflicting copies rather than merging changes. This fragmented our codebase and forced manual reconciliation of `App.tsx` and `geminiService.ts`.
 
-**Why It Was Challenging**  
-In previous projects, we used VS Code which relies on mature Git protocols: git pull, git merge, git rebase to handle concurrent changes gracefully. Google AI Studio, however, manages its own internal project state independently of Git. It does not "pull" changes from a remote branch before saving, which means it has no awareness of what your teammates have committed. This forced us into a strict workflow where only one member could safely hold the "active" AI Studio project at any given time. Any deviation from this protocol resulted in divergent versions that had to be manually compared and merged, which our GitHub commit history shows commits from a single author, as simultaneous pushes would have caused unresolvable conflicts in the shared project state.
+### 🔍 Why It Was Challenging
+Unlike VS Code, which relies on mature Git protocols (`git pull`, `merge`, `rebase`), Google AI Studio manages its own internal project state. 
 
-**Solution**  
-Rather than fighting the tool's constraints, we restructured our team of three around a clear division of specialisation. One member took full ownership of all coding and implementation, acting as the sole committer across services/geminiService.ts, App.tsx, services/firestoreService.ts, and components/GuideCard.tsx. Which is why our GitHub commit history reflects a single primary author. This was a deliberate architectural decision, not a lack of contribution. The second member did user research and testing: conducting real-world scan tests, gathering user feedback, and iterating on UI pain points which were then communicated back to the developer for implementation. The third member owned all project documentation.  
-This role separation meant zero merge conflicts, a stable codebase at every checkpoint, and each member contributing meaningfully within the constraints of AI Studio's one-way sync model. It is a real-world lesson in adapting software engineering workflows to AI-native development environments.  
-![][image4]  
-(single author commit history)
+* **No Auto-Pull:** AI Studio does not "pull" changes before saving, meaning it has no awareness of teammate commits.
+* **Single-State Constraint:** This forced us into a workflow where only one member could safely hold the "active" AI Studio project at a time. 
+* **Manual Reconciliation:** Any deviation resulted in divergent versions, which explains why our commit history shows a primary author—simultaneous pushes would have caused unresolvable conflicts.
 
-# 
+### Final Solution
+Rather than fighting the tool's constraints, we restructured our team of three around a clear **division of specialization**. This deliberate architectural decision ensured zero merge conflicts and a stable codebase.
 
-# 
+| Team Member | Domain Specialization | Primary Responsibilities |
+| :--- | :--- | :--- |
+| **Developer** | Coding & Implementation | Sole committer for `App.tsx`, `geminiService.ts`, and `firestoreService.ts`. |
+| **Researcher** | User Testing & UX | Conducted real-world scan tests and gathered feedback to iterate on UI pain points. |
+| **Architect** | Documentation | Owned the 20-page project documentation and technical mapping. |
+
+> **Lesson Learned:** This was a real-world lesson in adapting traditional software engineering workflows to **AI-native development tools**. By separating roles, we maintained a high-velocity output without the technical debt of a fragmented repo.
+
+
+
 
 # **Technical Trade-Offs**
 
