@@ -28,7 +28,6 @@ In high-density urban hubs like **Bandar Sunway**, the recycling crisis isn't a 
 * **🎓 University Hubs:** Heavy delivery packaging use leads to "accidental contamination."
 * **🚛 Municipal Authorities:** Inherit the high costs of downstream sorting.
 
----
 
 ## ❌ Why Current Solutions Are Insufficient
 
@@ -58,6 +57,8 @@ Malaysia has made progress through SAS initiatives and increasing recycling faci
 
 Waste operators face downstream consequences such as contamination and reduced material recovery.
 
+---
+
 
 ##  
 
@@ -81,8 +82,6 @@ Waste operators face downstream consequences such as contamination and reduced m
 * **Relevance:** Climate mitigation requires behavior change and awareness. EcoTrack encourages **micro-learning** at the point of disposal.
 * **The "Why":** Climate action requires the human capacity to act sustainably. EcoTrack embeds micro-awareness into daily activity. By making recycling decisions easy and accurate, we foster a culture of responsible consumption and active participation in climate mitigation.
 
----
-
 ## Reducing Decision Friction 
 
 EcoTrack provides **real-time, AI-based clarity** at the moment of disposal, addressing one of the *core barriers* to correct recycling:
@@ -98,7 +97,9 @@ This directly contributes to:
 * Reduced waste contamination  
 * Increased recycling rates
 
-# 
+
+---
+
 
 # 🎯 Solution Overview
 
@@ -113,7 +114,6 @@ Instead of forcing users to struggle with technical labels, manual searches, or 
 
 This directly aligns with **SDG 12.5** by ensuring correct behavior at the moment waste is generated. By removing the bottlenecks of confusion and contamination, we meaningfully increase proper recycling participation across Malaysia.
 
----
 
 ## 📱 User Flow: The 3-Second Scan
 
@@ -136,6 +136,7 @@ When a user scans an item, they receive a comprehensive data summary:
 
 ---
 
+
 # 🚀 Technological Innovation
 
 ## 💡 What Makes EcoTrack Unique? (USP)
@@ -144,7 +145,6 @@ EcoTrack’s **Unique Selling Point (USP)** lies in delivering intelligent, real
 
 Instead of relying on static references or user guesswork, EcoTrack leverages **multimodal AI (Vision + Structured Reasoning)** to instantly identify materials and translate them into instructions grounded in Malaysian recycling rules. This eliminates the "cognitive friction" that causes sustainable intent to fail in the real world.
 
----
 
 ## ⚖️ Comparison: Existing Solutions & Alternatives
 
@@ -157,13 +157,10 @@ To understand EcoTrack's value, we must look at how it bridges the gaps left by 
 | **RE:THINK** | Education & Locators | Not live/widely adopted; relies on user interpretation without AI assistance. |
 | **RVM Machines** | Physical Hardware | Limited to PET/Aluminium; fixed locations; high infrastructure cost. |
 
----
 
 ## 🏆 Core Competitive Edge
 
 EcoTrack fundamentally redefines the recycling experience by replacing manual guesswork with **Real-Time Multimodal Reasoning**. 
-
-[Image of a comparison chart between traditional barcode scanning and AI multimodal vision recognition]
 
 ### Why we win:
 * **Vision-Based Recognition:** Unlike legacy apps that rely on barcode databases, our AI understands the specific material and condition of an item visually.
@@ -175,6 +172,9 @@ By closing the gap between intention and correct action, our technology:
 * ✅ **Supports SDG 12.5:** Improving recycling decisions at the source.
 * ✅ **Empowers Communities:** Enabling informed choices at the moment of disposal.
 * ✅ **Augments Infrastructure:** Adding a digital "brain" to existing physical bins.
+
+
+---
 
 
 # ✨ Key Features
@@ -217,15 +217,12 @@ We integrated the **Gemini 1.5 Flash** model to serve as the high-performance, m
 ### Google AI Studio & Gemini 3 (Preview)
 Throughout our development and prototyping phase, we utilized **Google AI Studio** and the **Gemini 3 (Preview)** model as advanced reasoning tools for developer assistance. These platforms were instrumental in generating the initial boilerplate code for our React and Flutter components and refining the complex system prompts used for waste analysis. By leveraging these tools, we were able to maximize our efficiency during the limited hackathon window, allowing us to rapidly iterate on the technical architecture and ensure that our **"Separation at Source" (SAS)** logic was robustly structured using **strict JSON schemas** before implementation.
 
----
-
 ## 💡 Importance of AI for our Solution
 
 * **Multimodal Analysis:** Unlike a simple barcode scanner that requires a pre-existing database, Gemini 1.5 Flash can analyze visual data (images of waste) in real-time. This allows EcoTrack to identify unbranded, crushed, or unique packaging that wouldn't be in a standard database.
 * **Localized Context:** We don't just use a generic AI model. We have **"grounded"** the AI with specific instructions on the Malaysian Separation at Source (SAS) policy. The AI knows to classify items into **Blue (Paper), Brown (Glass), and Orange (Plastic/Metal)** bins, making the advice immediately actionable for Malaysian users.
 * **Structured Output:** To ensure our app is reliable, we use Gemini's **JSON mode** with a predefined schema. This forces the AI to return data in a strict format (`material`, `recyclable`, `instruction`), preventing errors that could occur with free-text responses.
 
----
 
 ## 🛠️ Google Developer Technologies Used
 
