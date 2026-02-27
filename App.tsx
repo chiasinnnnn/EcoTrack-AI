@@ -42,21 +42,9 @@ const EcoTrackApp: React.FC = () => {
     }
   }, [user]);
 
-  const onScanPressed = async () => {
+  const onScanPressed = () => {
     // Automatically switch to Home page (index 0) to show the scan result
     setCurrentIndex(0);
-
-    // Check for camera availability
-    try {
-      const devices = await navigator.mediaDevices.enumerateDevices();
-      const hasCamera = devices.some(device => device.kind === 'videoinput');
-      
-      if (!hasCamera && !/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-        alert("No camera detected. Please upload an image file instead.");
-      }
-    } catch (err) {
-      console.error("Error checking for camera:", err);
-    }
     
     fileInputRef.current?.click();
   };
@@ -526,7 +514,7 @@ const EcoTrackApp: React.FC = () => {
         </button>
       )}
 
-      <input ref={fileInputRef} type="file" className="hidden" accept="image/*" onChange={handleFile} capture="environment" />
+      <input ref={fileInputRef} type="file" className="hidden" accept="image/*" onChange={handleFile} />
 
       {/* NavigationBar Widget */}
       <nav className="fixed bottom-0 left-0 right-0 max-w-lg mx-auto bg-[#f0f1eb]/90 backdrop-blur-xl border-t border-gray-100 h-20 flex items-center justify-around px-8 z-40">
