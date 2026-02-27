@@ -46,7 +46,7 @@ export class GeminiService {
       - Blue for Paper
       - Brown for Glass
       - Orange for Plastics/Metals
-      - Green/Black for Residual waste
+      - Grey/Black for Residual waste (Non-recyclable)
       
       Return the response in a structured JSON format.
     `;

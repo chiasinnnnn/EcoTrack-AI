@@ -157,12 +157,15 @@ const EcoTrackApp: React.FC = () => {
     : [];
 
   // UI Helper: Mapping instruction to M3 Tonal Colors
-  const getBinColor = (instruction: string) => {
+  const getBinColor = (instruction: string, isRecyclable: boolean) => {
+    if (!isRecyclable) return 'bg-slate-600'; // Residual/Non-recyclable is always Slate (Grey)
+    
     const i = instruction.toLowerCase();
     if (i.includes('blue') || i.includes('paper')) return 'bg-blue-600';
     if (i.includes('brown') || i.includes('glass')) return 'bg-[#5d4037]';
     if (i.includes('orange') || i.includes('plastic') || i.includes('metal')) return 'bg-orange-500';
-    return 'bg-[#006d3a]';
+    
+    return 'bg-slate-600';
   };
 
   /**
@@ -300,7 +303,7 @@ const EcoTrackApp: React.FC = () => {
                       </div>
                     </div>
 
-                    <div className={`${getBinColor(result.instruction)} rounded-2xl p-5 text-white flex gap-4 shadow-lg ring-4 ring-white`}>
+                    <div className={`${getBinColor(result.instruction, result.recyclable)} rounded-2xl p-5 text-white flex gap-4 shadow-lg ring-4 ring-white`}>
                       <i className="fas fa-location-arrow text-2xl opacity-50"></i>
                       <div>
                         <p className="text-[10px] font-black opacity-80 uppercase tracking-widest mb-1">SAS Disposal Action</p>
