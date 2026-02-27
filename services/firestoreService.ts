@@ -9,7 +9,9 @@ import {
   orderBy, 
   limit, 
   onSnapshot,
-  Timestamp 
+  Timestamp,
+  doc,
+  deleteDoc
 } from "firebase/firestore";
 import { HistoryItem, WasteAnalysis } from "../types";
 
@@ -146,4 +148,19 @@ export const subscribeToUserHistory = (userId: string, callback: (items: History
       }
     }
   });
+};
+
+export const deleteScanFromFirestore = async (id: string) => {
+  // Remove from local first
+  const history = getLocalHistory();
+  const updated = history.filter(item => item.id !== id);
+  localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
+
+  if (!isFirestoreAvailable || id.startsWith('local_') || id.startsWith('temp_')) return;
+
+  try {
+    await deleteDoc(doc(db, COLLECTION_NAME, id));
+  } catch (error) {
+    console.error("Firestore delete error:", error);
+  }
 };

@@ -3,7 +3,7 @@ import { auth } from './services/firebase';
 import { onAuthStateChanged, User, signInWithPopup, signOut } from 'firebase/auth';
 import { googleProvider } from './services/firebase';
 import { analyzeWasteImage } from './services/geminiService';
-import { saveScanToFirestore, subscribeToUserHistory, getHistoryFromFirestore } from './services/firestoreService';
+import { saveScanToFirestore, subscribeToUserHistory, getHistoryFromFirestore, deleteScanFromFirestore } from './services/firestoreService';
 import { WasteAnalysis, HistoryItem } from './types';
 import GuideCard from './components/GuideCard';
 
@@ -126,6 +126,12 @@ const EcoTrackApp: React.FC = () => {
     } else {
       setIsDetectingLocation(false);
     }
+  };
+
+  const handleDelete = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setHistory(prev => prev.filter(item => item.id !== id));
+    await deleteScanFromFirestore(id);
   };
 
   const recyclingCenters = [
@@ -349,7 +355,15 @@ const EcoTrackApp: React.FC = () => {
                       </h4>
                       <p className="text-xs text-gray-500">{new Date(item.timestamp).toLocaleDateString()}</p>
                     </div>
-                    <div className={`w-2 h-2 rounded-full ${item.result.items?.every(i => i.recyclable) ? 'bg-emerald-500' : item.result.items?.some(i => i.recyclable) ? 'bg-amber-500' : 'bg-red-500'}`}></div>
+                    <div className="flex items-center gap-3">
+                      <div className={`w-2 h-2 rounded-full ${item.result.items?.every(i => i.recyclable) ? 'bg-emerald-500' : item.result.items?.some(i => i.recyclable) ? 'bg-amber-500' : 'bg-red-500'}`}></div>
+                      <button 
+                        onClick={(e) => handleDelete(item.id, e)}
+                        className="w-8 h-8 rounded-full flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 transition-all"
+                      >
+                        <i className="fas fa-trash-can text-xs"></i>
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -494,7 +508,7 @@ const EcoTrackApp: React.FC = () => {
                   <div className="bg-white p-6 rounded-[28px] border border-gray-100">
                     <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Recycled</p>
                     <p className="text-4xl font-black text-emerald-600">
-                      {history.filter(item => item.result.recyclable).length}
+                      {history.reduce((acc, item) => acc + (item.result.items?.filter(i => i.recyclable).length || 0), 0)}
                     </p>
                   </div>
                 </div>
