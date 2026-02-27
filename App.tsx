@@ -68,7 +68,7 @@ const EcoTrackApp: React.FC = () => {
           clearTimeout(timeout);
           
           // Batch updates for immediate feedback
-          setResult(data);
+          setResult({ ...data, timestamp: Date.now() } as any);
           setLoading(false);
           
           // Background save to Firestore (non-blocking)
@@ -283,7 +283,7 @@ const EcoTrackApp: React.FC = () => {
 
                 {/* Result Details - Pops out immediately */}
                 {result && (
-                  <div key={result.material} className="p-6 animate-pop-in">
+                  <div key={(result as any).timestamp || result.material} className="p-6 animate-pop-in">
                     <div className="flex justify-between items-start mb-6">
                       <div>
                         <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Detected</span>
