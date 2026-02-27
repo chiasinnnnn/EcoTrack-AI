@@ -258,6 +258,8 @@ We optimized the workflow to ensure that a lack of internet never stops a user f
 4.  **☁️ Cloud Sync:** The data is pushed to **Firestore** automatically once a network connection is established.
 5.  **⚡ Actionable Feedback:** The UI renders a color-coded **Action Card** (Blue/Brown/Orange/Green) and provides a Navigation Link to the nearest center if specialized disposal is required.
 
+---
+
 <a name="imple-challenges"></a>
 # 🛠️ Implementation Challenges
 
@@ -338,6 +340,9 @@ catch (err: any) {
 }
 
 ```
+
+---
+
 ### 🚧 Challenge 2: Collaborative State & Version Control Synchronization
 A persistent operational challenge was the lack of true synchronization between **Google AI Studio** and **GitHub**. While AI Studio offers a "Save to GitHub" feature, it functions as a one-way push mechanism. 
 
