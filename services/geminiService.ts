@@ -4,24 +4,34 @@ import { WasteAnalysis } from "../types";
 const MATERIAL_ANALYSIS_SCHEMA = {
   type: Type.OBJECT,
   properties: {
-    material: {
-      type: Type.STRING,
-      description: "The name/type of the material identified (e.g., PET 1 Plastic, Aluminum, Cardboard).",
-    },
-    recyclable: {
-      type: Type.BOOLEAN,
-      description: "Whether the item is recyclable according to Malaysian guidelines.",
-    },
-    instruction: {
-      type: Type.STRING,
-      description: "Detailed disposal instructions strictly mentioning Malaysian SAS bin colors: Blue (Paper), Brown (Glass), Orange (Plastic/Metal).",
-    },
-    hazard_level: {
-      type: Type.STRING,
-      description: "Risk level (Low, Medium, High) for disposal",
+    items: {
+      type: Type.ARRAY,
+      description: "List of waste items identified in the image.",
+      items: {
+        type: Type.OBJECT,
+        properties: {
+          material: {
+            type: Type.STRING,
+            description: "The name/type of the material identified (e.g., PET 1 Plastic, Aluminum, Cardboard).",
+          },
+          recyclable: {
+            type: Type.BOOLEAN,
+            description: "Whether the item is recyclable according to Malaysian guidelines.",
+          },
+          instruction: {
+            type: Type.STRING,
+            description: "Detailed disposal instructions strictly mentioning Malaysian SAS bin colors: Blue (Paper), Brown (Glass), Orange (Plastic/Metal).",
+          },
+          hazard_level: {
+            type: Type.STRING,
+            description: "Risk level (Low, Medium, High) for disposal",
+          },
+        },
+        required: ["material", "recyclable", "instruction", "hazard_level"],
+      },
     },
   },
-  required: ["material", "recyclable", "instruction", "hazard_level"],
+  required: ["items"],
 };
 
 export class GeminiService {
@@ -38,17 +48,19 @@ export class GeminiService {
     const mimeType = header.split(";")[0].split(":")[1] || "image/jpeg";
 
     const prompt = `
-      Analyze this waste item for a user in Malaysia. 
-      Identify the exact material.
-      Determine if it is recyclable according to the Malaysian Separation at Source (SAS) policy.
-      Assess the hazard level (Low, Medium, High).
-      Provide clear instructions on how to dispose of it, strictly enforcing the Malaysian SAS bin colors:
-      - Blue for Paper
-      - Brown for Glass
-      - Orange for Plastics/Metals
-      - Grey/Black for Residual waste (Non-recyclable)
+      Analyze this image for waste items for a user in Malaysia. 
+      Identify ALL distinct waste items visible in the image.
+      For each item:
+      1. Identify the exact material.
+      2. Determine if it is recyclable according to the Malaysian Separation at Source (SAS) policy.
+      3. Assess the hazard level (Low, Medium, High).
+      4. Provide clear instructions on how to dispose of it, strictly enforcing the Malaysian SAS bin colors:
+         - Blue for Paper
+         - Brown for Glass
+         - Orange for Plastics/Metals
+         - Grey/Black for Residual waste (Non-recyclable)
       
-      Return the response in a structured JSON format.
+      Return the response in a structured JSON format containing an array of items.
     `;
 
     try {

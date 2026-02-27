@@ -282,34 +282,38 @@ const EcoTrackApp: React.FC = () => {
                 </div>
 
                 {/* Result Details - Pops out immediately */}
-                {result && (
-                  <div key={(result as any).timestamp || result.material} className="p-6 animate-pop-in">
-                    <div className="flex justify-between items-start mb-6">
-                      <div>
-                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Detected</span>
-                        <h3 className="text-3xl font-black text-gray-900 leading-none mt-1">{result.material}</h3>
-                      </div>
-                      <div className="flex flex-col items-end gap-2">
-                        <div className={`px-4 py-2 rounded-full text-[10px] font-black ${result.recyclable ? 'bg-emerald-100 text-emerald-700' : 'bg-red-50 text-red-600'}`}>
-                          {result.recyclable ? 'RECYCLABLE' : 'RESIDUAL'}
+                {result && result.items && (
+                  <div key={result.timestamp || 'initial'} className="animate-pop-in space-y-4 p-6">
+                    {result.items.map((item, index) => (
+                      <div key={index} className="bg-gray-50/50 rounded-[28px] p-5 border border-gray-100 shadow-sm">
+                        <div className="flex justify-between items-start mb-4">
+                          <div>
+                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Item {result.items.length > 1 ? index + 1 : ''}</span>
+                            <h3 className="text-2xl font-black text-gray-900 leading-none mt-1">{item.material}</h3>
+                          </div>
+                          <div className="flex flex-col items-end gap-2">
+                            <div className={`px-4 py-1.5 rounded-full text-[10px] font-black ${item.recyclable ? 'bg-emerald-100 text-emerald-700' : 'bg-red-50 text-red-600'}`}>
+                              {item.recyclable ? 'RECYCLABLE' : 'RESIDUAL'}
+                            </div>
+                            <div className={`px-3 py-1 rounded-full text-[8px] font-bold border ${
+                              item.hazard_level === 'High' ? 'border-red-200 bg-red-50 text-red-700' : 
+                              item.hazard_level === 'Medium' ? 'border-amber-200 bg-amber-50 text-amber-700' : 
+                              'border-blue-200 bg-blue-50 text-blue-700'
+                            }`}>
+                              {item.hazard_level.toUpperCase()} HAZARD
+                            </div>
+                          </div>
                         </div>
-                        <div className={`px-3 py-1 rounded-full text-[8px] font-bold border ${
-                          result.hazard_level === 'High' ? 'border-red-200 bg-red-50 text-red-700' : 
-                          result.hazard_level === 'Medium' ? 'border-amber-200 bg-amber-50 text-amber-700' : 
-                          'border-blue-200 bg-blue-50 text-blue-700'
-                        }`}>
-                          {result.hazard_level.toUpperCase()} HAZARD
-                        </div>
-                      </div>
-                    </div>
 
-                    <div className={`${getBinColor(result.instruction, result.recyclable)} rounded-2xl p-5 text-white flex gap-4 shadow-lg ring-4 ring-white`}>
-                      <i className="fas fa-location-arrow text-2xl opacity-50"></i>
-                      <div>
-                        <p className="text-[10px] font-black opacity-80 uppercase tracking-widest mb-1">SAS Disposal Action</p>
-                        <p className="text-lg font-bold leading-tight">{result.instruction}</p>
+                        <div className={`${getBinColor(item.instruction, item.recyclable)} rounded-2xl p-4 text-white flex gap-4 shadow-md`}>
+                          <i className="fas fa-location-arrow text-xl opacity-50 mt-1"></i>
+                          <div>
+                            <p className="text-[10px] font-black opacity-80 uppercase tracking-widest mb-1">SAS Disposal Action</p>
+                            <p className="text-sm font-bold leading-tight">{item.instruction}</p>
+                          </div>
+                        </div>
                       </div>
-                    </div>
+                    ))}
                   </div>
                 )}
               </div>
@@ -339,10 +343,13 @@ const EcoTrackApp: React.FC = () => {
                       <img src={item.image} className="w-full h-full object-cover" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h4 className="font-bold text-gray-900 truncate uppercase tracking-tight">{item.result.material}</h4>
+                      <h4 className="font-bold text-gray-900 truncate uppercase tracking-tight">
+                        {item.result.items?.[0]?.material || 'Unknown Material'}
+                        {item.result.items && item.result.items.length > 1 && ` (+${item.result.items.length - 1} more)`}
+                      </h4>
                       <p className="text-xs text-gray-500">{new Date(item.timestamp).toLocaleDateString()}</p>
                     </div>
-                    <div className={`w-2 h-2 rounded-full ${item.result.recyclable ? 'bg-emerald-500' : 'bg-red-500'}`}></div>
+                    <div className={`w-2 h-2 rounded-full ${item.result.items?.every(i => i.recyclable) ? 'bg-emerald-500' : item.result.items?.some(i => i.recyclable) ? 'bg-amber-500' : 'bg-red-500'}`}></div>
                   </div>
                 ))}
               </div>
