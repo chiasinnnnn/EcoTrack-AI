@@ -230,7 +230,7 @@ const EcoTrackApp: React.FC = () => {
                 <div className="bg-emerald-50 p-5 rounded-[28px] border border-emerald-100 shadow-sm">
                   <p className="text-[10px] font-black text-emerald-600/60 uppercase tracking-widest mb-1">Recycled</p>
                   <p className="text-3xl font-black text-emerald-600">
-                    {history.filter(item => item.result.recyclable).length}
+                    {history.reduce((acc, item) => acc + (item.result.items?.filter(i => i.recyclable).length || 0), 0)}
                   </p>
                 </div>
               </div>
