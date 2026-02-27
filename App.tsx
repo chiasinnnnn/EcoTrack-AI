@@ -273,16 +273,14 @@ const EcoTrackApp: React.FC = () => {
                 </div>
 
                 {/* Loading Overlay */}
-                {loading && (
-                  <div className="absolute inset-0 bg-black/40 backdrop-blur-md flex flex-col items-center justify-center text-white p-8 z-20">
-                    <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin mb-4"></div>
-                    <p className="font-black text-xl tracking-tighter italic uppercase">AI Thinking...</p>
-                  </div>
-                )}
+                <div className={`absolute inset-0 bg-black/40 backdrop-blur-md flex flex-col items-center justify-center text-white p-8 z-20 transition-opacity duration-500 ${loading ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+                  <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin mb-4"></div>
+                  <p className="font-black text-xl tracking-tighter italic uppercase">AI Thinking...</p>
+                </div>
 
                 {/* Result Details - Pops out immediately */}
                 {result && (
-                  <div className="p-6 animate-in fade-in zoom-in slide-in-from-top-2 duration-300 ease-out">
+                  <div key={JSON.stringify(result)} className="p-6 animate-pop-in">
                     <div className="flex justify-between items-start mb-6">
                       <div>
                         <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Detected</span>
