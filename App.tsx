@@ -271,19 +271,19 @@ const EcoTrackApp: React.FC = () => {
               {/* Preview & Result Container */}
               <div className="relative bg-white rounded-[32px] overflow-hidden shadow-2xl border-4 border-white transition-all duration-300">
                 {/* Image Display - Stays consistent */}
-                <div className={`${result ? 'h-48' : 'aspect-[4/5]'} transition-all duration-500 ease-out overflow-hidden`}>
+                <div className={`${result ? 'h-48' : 'aspect-[4/5]'} transition-all duration-300 ease-out overflow-hidden`}>
                   <img src={image!} className="w-full h-full object-cover" />
                 </div>
 
                 {/* Loading Overlay */}
-                <div className={`absolute inset-0 bg-black/40 backdrop-blur-md flex flex-col items-center justify-center text-white p-8 z-20 transition-opacity duration-500 ${loading ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+                <div className={`absolute inset-0 bg-black/20 backdrop-blur-sm flex flex-col items-center justify-center text-white p-8 z-20 transition-opacity duration-200 ${loading ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
                   <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin mb-4"></div>
                   <p className="font-black text-xl tracking-tighter italic uppercase">AI Thinking...</p>
                 </div>
 
                 {/* Result Details - Pops out immediately */}
                 {result && (
-                  <div key={JSON.stringify(result)} className="p-6 animate-pop-in">
+                  <div key={result.material} className="p-6 animate-pop-in">
                     <div className="flex justify-between items-start mb-6">
                       <div>
                         <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Detected</span>
