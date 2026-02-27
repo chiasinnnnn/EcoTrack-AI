@@ -4,8 +4,9 @@
 
 ## 📚 Table of Contents
 * [🚩 Problem Statement](#-problem-statement)
-* [🌍SDG Tackled](#-sdg-tackled)
+* [🌍 SDG Tackled](#-sdg-tackled)
 * [🎯 Solution Overview](#-solution-overview)
+* [🚀 Technological Innovation](#technological-innovation)
 * [✨ Key Features](#-key-features)
 * [🏗️ Technological Architecture](#-technological-architecture)
 * [💻 System Architecture](#-system-architecture)
@@ -37,8 +38,6 @@ Recycling symbols (e.g., PET 1, HDPE 2) assume users understand material science
 
 > **The Interpretation Gap:** Recycling decisions happen in seconds. Static labels require interpretation, and interpretation creates friction.
 
----
-
 ### 2️⃣ Lack of Real-Time, Contextual Guidance
 Existing awareness campaigns and online resources require users to:
 * 🔍 **Search manually**
@@ -46,8 +45,6 @@ Existing awareness campaigns and online resources require users to:
 * 📍 **Cross-check municipal rules**
 
 At the point of disposal, this is unrealistic. When guidance is not instant and clear, convenience wins over sustainability. As a result, recyclable items are discarded as general waste, or contaminated items enter recycling streams, reducing processing efficiency.
-
----
 
 ### 3️⃣ Infrastructure Alone Does Not Change Behavior
 Malaysia has made progress through SAS initiatives and increasing recycling facilities. However, infrastructure does not automatically translate into correct usage. Without immediate, actionable feedback, users remain uncertain.
@@ -83,8 +80,8 @@ Waste operators face downstream consequences such as contamination and reduced m
 * **Relevance:** Climate mitigation requires behavior change and awareness. EcoTrack encourages **micro-learning** at the point of disposal.
 * **The "Why":** Climate action requires the human capacity to act sustainably. EcoTrack embeds micro-awareness into daily activity. By making recycling decisions easy and accurate, we foster a culture of responsible consumption and active participation in climate mitigation.
 
-*
-* ---
+---
+
 ## Reducing Decision Friction 
 
 EcoTrack provides **real-time, AI-based clarity** at the moment of disposal, addressing one of the *core barriers* to correct recycling:
@@ -102,83 +99,82 @@ This directly contributes to:
 
 # 
 
-# **Solution Overview**
+# 🎯 Solution Overview
 
-EcoTrack is a mobile AI-powered recycling assistant that provides instant, actionable recycling guidance using camera-based item recognition.
+**EcoTrack** is a mobile AI-powered recycling assistant that provides instant, actionable recycling guidance using camera-based item recognition. 
 
-Instead of requiring users to:
+Instead of forcing users to struggle with technical labels, manual searches, or confusing recycling codes, EcoTrack delivers clear answers within seconds:
 
-* Read technical labels  
-* Search manually online  
-* Interpret recycling codes
+* 🤖 **Instant Inference:** AI identifies material type and recyclability on the spot.
+* 💬 **Plain Language:** Outputs clear, actionable instructions instead of jargon.
+* 📍 **Geo-Awareness:** Maps the nearest facility for immediate disposal.
+* ♻️ **SAS Alignment:** Reinforces Malaysia's **Separation at Source (SAS)** policy in real time.
 
-EcoTrack delivers clear answers within seconds.
+This directly aligns with **SDG 12.5** by ensuring correct behavior at the moment waste is generated. By removing the bottlenecks of confusion and contamination, we meaningfully increase proper recycling participation across Malaysia.
 
-* AI identifies material type and recyclability instantly  
-* Outputs clear instructions, not labels  
-* Maps nearest facility for immediate action  
-* Reinforces *Separation at Source (SAS)* in real time
+---
 
-This directly aligns with SDG 12.5’s emphasis on *prevention, reduction, recycling, and reuse* by ensuring correct behavior at the moment waste is generated. Since confusion and contamination are known bottlenecks in Malaysia’s recycling chain, simplifying decisions can meaningfully increase proper recycling participation. 
+## 📱 User Flow: The 3-Second Scan
 
-User Flow:
+We designed the EcoTrack experience to be frictionless, mirroring the speed of a typical disposal decision.
 
-1. User opens app  
-2. Points camera at item  
-3. AI identifies material and object  
-4. App displays an action card:
+1. **Open:** User launches the app.
+2. **Scan:** Points the camera at the waste item.
+3. **Analyze:** Gemini 1.5 Flash identifies the material and object.
+4. **Act:** The app displays an interactive **Action Card**.
 
-   * Item name  
-   * Material type (e.g., PET 1, HDPE 2\)  
-   * Recyclability status (Yes / No / Conditional)  
-   * Preparation instructions (e.g., rinse required)  
-   * Nearest recycling center  
-   * Sustainability points earned
+### 📋 The Action Card Breakdown
+When a user scans an item, they receive a comprehensive data summary:
 
-# 
+| Feature | Description |
+| :--- | :--- |
+| **📦 Item Name** | Identified object (e.g., "Mineral Water Bottle"). |
+| **🧪 Material Type** | Scientific classification (e.g., PET 1, HDPE 2). |
+| **✅ Status** | Recyclability (Yes / No / Conditional). |
+| **🧼 Instructions** | Preparation steps (e.g., "Please rinse and remove cap"). |
 
-# **Technology Innovation**
+---
 
-What Makes EcoTrack Unique? (USP)
+# 🚀 Technological Innovation
 
-EcoTrack’s Unique Selling Point (USP) lies in how it delivers intelligent, real-time recycling decisions exactly when and where people need them (at the moment of disposal), using camera-based AI reasoning instead of static references or user guesses.
+## 💡 What Makes EcoTrack Unique? (USP)
 
-EcoTrack leverages multimodal AI (vision \+ structured reasoning) to instantly identify materials and translate them into instant recycling instructions grounded in Malaysian recycling rules. It reduces cognitive friction at the point of action, which is the critical behavioral bottleneck that static apps, signage, and awareness campaigns have failed to address. 
+EcoTrack’s **Unique Selling Point (USP)** lies in delivering intelligent, real-time recycling decisions exactly when and where people need them—**at the moment of disposal**. 
 
-## Comparison: Existing Solutions & Alternatives
+Instead of relying on static references or user guesswork, EcoTrack leverages **multimodal AI (Vision + Structured Reasoning)** to instantly identify materials and translate them into instructions grounded in Malaysian recycling rules. This eliminates the "cognitive friction" that causes sustainable intent to fail in the real world.
 
-**1\. NuCycle (Malaysia)**  
-NuCycle is a Malaysian app aiming to help users locate recycling centers and earn rewards for drop-offs.  
-Limitations:
+---
 
-* It does not provide real-time item classification or material recognition.  
-* Users still need to know what to sort before they bring items for recycling.  
-* Does not reduce decision friction at disposal.
+## ⚖️ Comparison: Existing Solutions & Alternatives
 
-**2\. Bower (Scandinavia)**  
-Apps like Bower also scan items and provide recycling instructions and co-benefits like CO2 savings info, but are not localized for Malaysian waste streams and do not integrate with local recycling rules.
+To understand EcoTrack's value, we must look at how it bridges the gaps left by current regional and global solutions:
 
-**3\. RE: THINK**   
-“RE: THINK Waste Mobile Application” aims to assist in locating recycling facilities and educating users, but aren’t live, widely adopted tools and still rely on user interpretation without instant, camera-assisted identification.
+| Solution | Scope | Limitations |
+| :--- | :--- | :--- |
+| **NuCycle (MY)** | Rewards & Drop-offs | No real-time item classification; assumes users already know how to sort. |
+| **Bower (EU)** | Global Scanning | Not localized for Malaysian waste streams or specific SAS policies. |
+| **RE:THINK** | Education & Locators | Not live/widely adopted; relies on user interpretation without AI assistance. |
+| **RVM Machines** | Physical Hardware | Limited to PET/Aluminium; fixed locations; high infrastructure cost. |
 
-**4\. AI Reverse Vending Machines (RVMs)**  
-AI-powered Reverse Vending Machines accept bottles and cans in exchange for rewards. These machines (e.g., in Selangor & Subang Jaya) automate collection and provide incentives but:
+---
 
-* Only accept limited materials (mainly PET bottles, aluminum cans)  
-* Operate at fixed physical locations  
-* Assume prior knowledge of what is recyclable  
-* Do not help users decide recyclability for broader packaging types
+## 🏆 Core Competitive Edge
 
+EcoTrack fundamentally redefines the recycling experience by replacing manual guesswork with **Real-Time Multimodal Reasoning**. 
 
-## **Core Competitive Edge Over Alternatives**
+[Image of a comparison chart between traditional barcode scanning and AI multimodal vision recognition]
 
-EcoTrack fundamentally redefines the recycling experience by replacing manual guesswork with real-time multimodal reasoning. Unlike legacy alternatives that rely on static lookups or barcode databases, our AI provides instant, vision-based recognition that understands the specific material and condition of an item in its local context. By integrating hyper-localized Malaysian recycling logic, we transform generic environmental data into immediate, actionable guidance tailored to the user’s specific location. This unique synergy of novel AI application, measurable real-world impact, and a scalable architecture allows EcoTrack to transcend the limitations of current apps and hardware. We aren't just building a tool; we are creating a high-growth pathway for Smart City integration that positions EcoTrack as the definitive intelligence layer for urban waste management, both in Malaysia and across the region.
+### Why we win:
+* **Vision-Based Recognition:** Unlike legacy apps that rely on barcode databases, our AI understands the specific material and condition of an item visually.
+* **Hyper-Localized Logic:** We transform generic data into actionable guidance tailored to Malaysian waste categories (Blue/Brown/Orange bins).
+* **Scalable Intelligence:** We are creating a high-growth pathway for **Smart City integration**, positioning EcoTrack as the definitive intelligence layer for urban waste management.
 
-EcoTrack directly reduces the **decision uncertainty** that leads to waste stream contamination and low recycling participation. By *closing the gap between intention and correct action*, the technology:
+### 📈 Measurable Real-World Impact
+By closing the gap between intention and correct action, our technology:
+* ✅ **Supports SDG 12.5:** Improving recycling decisions at the source.
+* ✅ **Empowers Communities:** Enabling informed choices at the moment of disposal.
+* ✅ **Augments Infrastructure:** Adding a digital "brain" to existing physical bins.
 
-* supports SDG 12.5 (reducing waste through improved recycling decisions)  
-* enables communities to make informed choices at the moment of disposal  
-* augments infrastructure with real-time behavioral guidance
 
 # **Key Features**
 
