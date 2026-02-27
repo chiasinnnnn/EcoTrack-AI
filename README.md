@@ -1,14 +1,14 @@
 # 🌍 EcoTrack: Smart Circular Economy Assistant
 
-> **Solving the "Recycling Crisis" in Bandar Sunway through AI-driven clarity.**
+> **Solving the "Recycling Crisis" in Malaysia through AI-driven clarity.**
 
 ## 📚 Table of Contents
 * [🚩 Problem Statement](#-problem-statement)
 * [🌍 SDG Tackled](#-sdg-tackled)
 * [🎯 Solution Overview](#-solution-overview)
-* [🚀 Technological Innovation](#technological-innovation)
+* [🚀 Technological Innovation](#-technological-innovation)
 * [✨ Key Features](#-key-features)
-* [🏗️ Technological Architecture](#-technological-architecture)
+* [🏗️ Technological Architecture](#technological-arch)
 * [💻 System Architecture](#-system-architecture)
 * [📈 Success Metrics & Results](#-success-metrics--results)
 * [🔮 Future Roadmap](#-future-roadmap)
@@ -60,7 +60,7 @@ Waste operators face downstream consequences such as contamination and reduced m
 
 ##  
 
-# 🌍SDG Tackled
+# 🌍 SDG Tackled
 
 ### 🏙️ SDG 11: Sustainable Cities and Communities
 > **Target 11.6:** Reduce the adverse per capita environmental impact of cities, including by paying special attention to municipal and other waste management.
@@ -176,34 +176,74 @@ By closing the gap between intention and correct action, our technology:
 * ✅ **Augments Infrastructure:** Adding a digital "brain" to existing physical bins.
 
 
-# **Key Features**
+# ✨ Key Features
 
-1) **AI-Powered Waste Identification**   
-   Utilizes Gemini 1.5 Flash to perform real-time multimodal analysis on waste images to identify materials and determine recyclability.
+### 🤖 AI-Powered Waste Identification 
+Utilizes **Gemini 1.5 Flash** to perform real-time multimodal analysis on waste images to identify materials and determine recyclability.
 
-2) **Localized SAS Alignment**   
-   Provides disposal instructions strictly tailored to the **Malaysian Separation at Source (SAS)** policy, specifically directing users to Blue (Paper), Brown (Glass), Orange (Plastics/Metals), or Green/Black (Residual) bins.
+### 🇲🇾 Localized SAS Alignment 
+Provides disposal instructions strictly tailored to the **Malaysian Separation at Source (SAS)** policy, specifically directing users to:
+* 🟦 **Blue Bin:** Paper
+* 🟫 **Brown Bin:** Glass
+* 🟧 **Orange Bin:** Plastics/Metals
+* ⬛ **Green/Black Bin:** Residual Waste
 
-3) **Hazard Level Assessment**   
-   The AI engine evaluates scanned items for potential hazards (High, Medium, or Low), providing critical safety reasoning for dangerous household waste like electronics or chemicals.  
-4) **Nearby Recycling Center Locator**  
-   Integrates the Web Geolocation API to calculate the real-time distance to specialized recycling centers, helping users dispose of items that do not fit into standard household bins.
+### ⚠️ Hazard Level Assessment 
+The AI engine evaluates scanned items for potential hazards (**High, Medium, or Low**), providing critical safety reasoning for dangerous household waste like electronics or chemicals.
 
-5) **Resilient Scan History**  
-   Implements a "Local-First" data strategy using a LocalStorage fallback; this ensures that user scan history is instantly saved and accessible even in low-connectivity environments before syncing to Cloud Firestore.  
-6) **Interactive Educational Guide**: Features a dedicated dashboard and detail modals that educate users on the "Dos and Don’ts" for each Malaysian recycling category using high-contrast, accessible UI elements.
+### 📍 Nearby Recycling Center Locator
+Integrates the **Web Geolocation API** to calculate the real-time distance to specialized recycling centers, helping users dispose of items that do not fit into standard household bins.
 
-7) **Cross-Platform Foundation**: While primarily a React web application, the project includes a **Flutter prototype** foundation to demonstrate a clear roadmap toward a native mobile experience.
+### 💾 Resilient Scan History
+Implements a **"Local-First"** data strategy using a **LocalStorage fallback**; this ensures that user scan history is instantly saved and accessible even in low-connectivity environments before syncing to **Cloud Firestore**.
 
-# **Technological Architecture**
+### 📚 Interactive Educational Guide
+Features a dedicated dashboard and detail modals that educate users on the **"Dos and Don’ts"** for each Malaysian recycling category using high-contrast, accessible UI elements.
 
-## AI Integration
+### 📱 Cross-Platform Foundation
+While primarily a **React web application**, the project includes a **Flutter prototype foundation** to demonstrate a clear roadmap toward a native mobile experience.
 
-1) **Gemini 1.5 Flash (via Gemini API)**   
-   We integrated the Gemini 1.5 Flash model to serve as the high-performance, multimodal engine for our core "Scan & Identify" feature. By processing base64 image data from the user's camera alongside localized text instructions, the model "sees" and categorizes waste without requiring a pre-existing barcode database. We specifically selected the "Flash" version for its low-latency capabilities, which ensures that users receive accurate sorting instructions in under 3 seconds—a critical requirement for delivering a seamless, mobile-first experience that encourages immediate recycling actions.  
-     
-2) **Google AI Studio & Gemini 3 (Preview)**  
-   Throughout our development and prototyping phase, we utilized Google AI Studio and the Gemini 3 (Preview) model as advanced reasoning tools for developer assistance. These platforms were instrumental in generating the initial boilerplate code for our React and Flutter components and refining the complex system prompts used for waste analysis. By leveraging these tools, we were able to maximize our efficiency during the limited hackathon window, allowing us to rapidly iterate on the technical architecture and ensure that our "Separation at Source" (SAS) logic was robustly structured using strict JSON schemas before implementation.  
+---
+
+<a name="tech-arch"></a>
+# 🏗️ Technological Architecture
+
+## 🤖 AI Integration
+
+### Gemini 1.5 Flash (via Gemini API) 
+We integrated the **Gemini 1.5 Flash** model to serve as the high-performance, multimodal engine for our core "Scan & Identify" feature. By processing **base64 image data** from the user's camera alongside localized text instructions, the model "sees" and categorizes waste without requiring a pre-existing barcode database. We specifically selected the **"Flash"** version for its low-latency capabilities, which ensures that users receive accurate sorting instructions in **under 3 seconds**—a critical requirement for delivering a seamless, mobile-first experience that encourages immediate recycling actions.
+
+### Google AI Studio & Gemini 3 (Preview)
+Throughout our development and prototyping phase, we utilized **Google AI Studio** and the **Gemini 3 (Preview)** model as advanced reasoning tools for developer assistance. These platforms were instrumental in generating the initial boilerplate code for our React and Flutter components and refining the complex system prompts used for waste analysis. By leveraging these tools, we were able to maximize our efficiency during the limited hackathon window, allowing us to rapidly iterate on the technical architecture and ensure that our **"Separation at Source" (SAS)** logic was robustly structured using **strict JSON schemas** before implementation.
+
+---
+
+## 💡 Importance of AI for our Solution
+
+* **Multimodal Analysis:** Unlike a simple barcode scanner that requires a pre-existing database, Gemini 1.5 Flash can analyze visual data (images of waste) in real-time. This allows EcoTrack to identify unbranded, crushed, or unique packaging that wouldn't be in a standard database.
+* **Localized Context:** We don't just use a generic AI model. We have **"grounded"** the AI with specific instructions on the Malaysian Separation at Source (SAS) policy. The AI knows to classify items into **Blue (Paper), Brown (Glass), and Orange (Plastic/Metal)** bins, making the advice immediately actionable for Malaysian users.
+* **Structured Output:** To ensure our app is reliable, we use Gemini's **JSON mode** with a predefined schema. This forces the AI to return data in a strict format (`material`, `recyclable`, `instruction`), preventing errors that could occur with free-text responses.
+
+---
+
+## 🛠️ Google Developer Technologies Used
+
+* **Firebase Authentication:** We implemented Firebase Authentication to manage secure, end-to-end identity through **Google Sign-In**. This provided a frictionless onboarding experience, allowing us to securely associate personalized Scan History with unique user IDs with minimal development overhead.
+* **Cloud Firestore:** We chose Cloud Firestore as our primary **NoSQL database** to manage real-time data synchronization. Because Firestore uses live listeners via `onSnapshot`, every new waste identification is instantly reflected across all user platforms without requiring a manual page refresh.
+* **Flutter:** We utilized Flutter to develop a high-performance **native mobile prototype** alongside our React web application. This provided a robust engine for handling camera-heavy requirements and demonstrated a scalable path toward a native mobile experience across iOS and Android.
+
+---
+
+# 💻 System Architecture
+
+[Image of a software architecture diagram showing the connection between a React/Flutter frontend, Gemini 1.5 Flash API, and Firebase Firestore/Auth]
+
+Our architecture is designed to be modular, reactive, and resilient, ensuring that the AI analysis is instantaneous and available even in low-connectivity environments.
+
+* **Frontend (React/TypeScript):** Handles the user interface and **Material 3** tonal rendering. It manages camera input and image preprocessing (Base64 conversion) before sending data to the AI layer.
+* **AI Integration Layer (Gemini 1.5 Flash):** The core intelligence of EcoTrack. It uses a **Strict JSON Schema** to identify materials and assess Hazard Levels. It is grounded in Malaysian SAS policy to map waste to the correct bin colors.
+* **Hybrid Data Layer (Firebase & LocalStorage):**
+    * **
    
 
 ### Importance of AI for our solution
