@@ -8,8 +8,9 @@
 * [🎯 Solution Overview](#-solution-overview)
 * [🚀 Technological Innovation](#-technological-innovation)
 * [✨ Key Features](#-key-features)
-* [🏗️ Technological Architecture](#technological-arch)
+* [🏗️ Technological Architecture](#tech-arch)
 * [💻 System Architecture](#-system-architecture)
+* [🛠️ Implementation Challenges](#imple-challenges)
 * [📈 Success Metrics & Results](#-success-metrics--results)
 * [🔮 Future Roadmap](#-future-roadmap)
 * [👥 Team CodeQueens](#-team-codequeens)
@@ -236,56 +237,55 @@ Throughout our development and prototyping phase, we utilized **Google AI Studio
 
 # 💻 System Architecture
 
-[Image of a software architecture diagram showing the connection between a React/Flutter frontend, Gemini 1.5 Flash API, and Firebase Firestore/Auth]
-
 Our architecture is designed to be modular, reactive, and resilient, ensuring that the AI analysis is instantaneous and available even in low-connectivity environments.
 
-* **Frontend (React/TypeScript):** Handles the user interface and **Material 3** tonal rendering. It manages camera input and image preprocessing (Base64 conversion) before sending data to the AI layer.
+* **Frontend (React/TypeScript):** Handles the user interface and **Material 3** tonal rendering. It manages camera input and image preprocessing (**Base64 conversion**) before sending data to the AI layer.
 * **AI Integration Layer (Gemini 1.5 Flash):** The core intelligence of EcoTrack. It uses a **Strict JSON Schema** to identify materials and assess Hazard Levels. It is grounded in Malaysian SAS policy to map waste to the correct bin colors.
 * **Hybrid Data Layer (Firebase & LocalStorage):**
-    * **
-   
+    * **Auth:** Secure Google Sign-In via Firebase Authentication.
+    * **Resilient Persistence:** Uses a **"Local-First"** strategy where scans are saved to the device immediately (`saveToLocal`) and then synced to **Cloud Firestore** for cross-device access.
+* **Location Service:** Utilizes the **Web Geolocation API** to provide real-time distance calculations to the nearest specialized recycling centers.
 
-### Importance of AI for our solution
+---
 
-1. **Multimodal Analysis**  
-   Unlike a simple barcode scanner that requires a pre-existing database, Gemini 1.5 Flash can analyze visual data (images of waste) in real-time. This allows Kitaro to identify unbranded, crushed, or unique packaging that wouldn't be in a standard database.  
-     
-2. **Localized Context**  
-   We don't just use a generic AI model. We have "grounded" the AI with specific instructions on the Malaysian Separation at Source (SAS**)** policy. The AI knows to classify items into Blue (Paper), Brown (Glass), and Orange (Plastic/Metal) bins, making the advice immediately actionable for Malaysian users.
+## 🔄 Workflow: The Scan-to-Sync Lifecycle
 
-3. **Structured Output:**   
-   To ensure our app is reliable, we use Gemini's JSON mode with a predefined schema. This forces the AI to return data in a strict JSON format (material, recyclable, instruction), preventing errors that could occur with free-text responses.
+We optimized the workflow to ensure that a lack of internet never stops a user from making a sustainable decision.
 
-## Google Developer Technologies Used in EcoTrack
+1.  **📸 Capture:** User snaps an image of waste through the mobile-optimized interface.
+2.  **🧠 Inference:** Gemini 1.5 Flash identifies the material and hazard level based on localized **SAS prompts**.
+3.  **💾 Local Save:** The result is immediately committed to **local storage** for zero-latency history access.
+4.  **☁️ Cloud Sync:** The data is pushed to **Firestore** automatically once a network connection is established.
+5.  **⚡ Actionable Feedback:** The UI renders a color-coded **Action Card** (Blue/Brown/Orange/Green) and provides a Navigation Link to the nearest center if specialized disposal is required.
 
-1) **Firebase Authentication**   
-   We implemented Firebase Authentication to manage secure, end-to-end identity through Google Sign-In. This provided a frictionless onboarding experience for our users, allowing us to securely associate personalized Scan History with unique user IDs with minimal development overhead.  
-2) **Cloud Firestore**  
-   We chose Cloud Firestore as our primary NoSQL database to manage real-time data synchronization for user scan history. Because Firestore uses live listeners via `onSnapshot`, every new waste identification is instantly reflected across all user platforms without requiring a manual page refresh, leading to a highly responsive and reliable record of a user’s sustainability progress  
-3) **Flutter**  
-   We utilized Flutter to develop a high-performance native mobile prototype alongside our React web application. This choice provided a robust engine for handling camera-heavy requirements, which allowed us to demonstrate a scalable path toward a native mobile experience that maintains consistent logic and high-speed rendering across both iOS and Android devices.  
-     
-   
+<a name="imple-challenges"></a>
+# 🛠️ Implementation Challenges
 
-# System Architecture
+## 🚧 Challenge 1: Inconsistent & Unstructured AI Responses
+One of the most significant technical hurdles was the **probabilistic nature** of the Gemini Vision model. Our frontend expected a strict, predictable JSON shape to render the Result Card, but early testing revealed that the model frequently:
+* Wrapped responses in **Markdown blocks** (```json).
+* Added conversational preambles (e.g., "Sure, here is your data...").
+* Used inconsistent keys (e.g., `"Plastic Type"` instead of `"materialType"`).
+* Omitted fields entirely when images were ambiguous.
 
-Our architecture is designed to be modular, reactive, and resilient, ensuring that the AI analysis is instantaneous and available even in low-connectivity environments.
+Because our `App.tsx` directly destructures the response, a single invalid JSON structure caused a **runtime crash**, breaking our promise of instant guidance.
 
-* **Frontend (React/TypeScript):** Handles the user interface and Material 3 tonal rendering. It manages camera input and image preprocessing (Base64 conversion) before sending data to the AI layer.  
-* **AI Integration Layer (Gemini 1.5 Flash):** The core intelligence of EcoTrack. It uses a Strict JSON Schema to identify materials and assess Hazard Levels. It is grounded in Malaysian SAS policy to map waste to the correct bin colors.  
-* **Hybrid Data Layer (Firebase & LocalStorage):** \* **Auth:** Secure Google Sign-In.  
-  * Resilient Persistence**:** Uses a "Local-First" strategy where scans are saved to the device immediately (`saveToLocal`) and then synced to Cloud Firestore for cross-device access.  
-* **Location Service:** Utilizes the Web Geolocation API to provide real-time distance calculations to the nearest specialized recycling centers.
+### 🔍 Why It Was Challenging
+Unlike traditional REST APIs, LLMs are not deterministic. An explicit "return only JSON" prompt can still fail due to:
+1. **Network Latency Spikes:** Causing partial or malformed responses.
+2. **Model Uncertainty:** The AI attempting to "explain" its confusion in plain text.
+3. **Parsing Errors:** Standard `JSON.parse()` throws an error the moment a single character (like a backtick or a prefix) is out of place.
+
+Our initial approach in services/geminiService.ts used a plain text prompt:  
+"Identify this item and return JSON with item name, material, recyclability and instructions."
+
+This caused markdown-wrapped JSON (\`\`\`json blocks), extra explanations before the object, and inconsistent key names. All caused failed parsing and JSON.parse() to throw and the result card to never render.
+
+### Final Solution  
+We pivoted to Gemini's native Controlled Generation feature by passing a responseSchema and setting responseMimeType: "application/json" directly in the SDK config. This instructs the model at the API level (not just via prompt) to return pure, schema-validated JSON with no markdown. The Google API itself guarantees the output format at the source.  
+In services/geminiService.ts, our final schema definition looks like this:
 
 
-## Workflow
-
-1. **Capture:** User snaps an image of waste.  
-2. **Inference:** Gemini 1.5 Flash identifies the material and hazard level based on localized SAS prompts.  
-3. **Local Save:** The result is immediately committed to local storage for zero-latency history access.  
-4. **Cloud Sync:** The data is pushed to Firestore when a network is available.  
-5. **Actionable Feedback:** The UI renders a color-coded Action Card (Blue/Brown/Orange/Green) and provides a Navigation Link to the nearest center if specialized disposal is required.
 
 # **Implementation Challenges**
 
