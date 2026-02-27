@@ -4,6 +4,7 @@
 
 ## 📚 Table of Contents
 * [🚩 Problem Statement](#-problem-statement)
+* [🌍SDG Tackled](#-sdg-tackled)
 * [🎯 Solution Overview](#-solution-overview)
 * [✨ Key Features](#-key-features)
 * [🏗️ Technological Architecture](#-technological-architecture)
@@ -27,59 +28,63 @@ In high-density urban hubs like **Bandar Sunway**, the recycling crisis isn't a 
 
 ---
 
-## Why Current Solutions Are Insufficient
+## ❌ Why Current Solutions Are Insufficient
 
 Despite national policies such as **Separation at Source (SAS)** and increasing availability of recycling bins, Malaysia’s current recycling system still faces behavioral and informational gaps for three reasons:
 
-1) **Static Information Cannot Solve Dynamic Decisions**
+### 1️⃣ Static Information Cannot Solve Dynamic Decisions
+Recycling symbols (e.g., PET 1, HDPE 2) assume users understand material science classifications. In reality, most consumers cannot differentiate plastic types visually. Posters and signage provide general guidelines but do not account for real-world edge cases such as mixed materials, contaminated containers, or unclear packaging labels. 
 
-Recycling symbols (e.g., PET 1, HDPE 2\) assume users understand material science classifications. In reality, most consumers cannot differentiate plastic types visually. Posters and signage provide general guidelines but do not account for real-world edge cases such as mixed materials, contaminated containers, or unclear packaging labels. Recycling decisions happen in seconds. Static labels require interpretation and interpretation creates friction.
+> **The Interpretation Gap:** Recycling decisions happen in seconds. Static labels require interpretation, and interpretation creates friction.
 
-2) **Lack of Real-Time, Contextual Guidance**
+---
 
+### 2️⃣ Lack of Real-Time, Contextual Guidance
 Existing awareness campaigns and online resources require users to:
-
-* Search manually  
-* Read long explanations  
-* Cross-check municipal rules
+* 🔍 **Search manually**
+* 📖 **Read long explanations**
+* 📍 **Cross-check municipal rules**
 
 At the point of disposal, this is unrealistic. When guidance is not instant and clear, convenience wins over sustainability. As a result, recyclable items are discarded as general waste, or contaminated items enter recycling streams, reducing processing efficiency.
 
-3) **Infrastructure Alone Does Not Change Behavior**
+---
 
+### 3️⃣ Infrastructure Alone Does Not Change Behavior
 Malaysia has made progress through SAS initiatives and increasing recycling facilities. However, infrastructure does not automatically translate into correct usage. Without immediate, actionable feedback, users remain uncertain.
 
-This leads to:
-
-* Contaminated recycling bins  
-* Lower material recovery rates  
-* Increased landfill pressure  
-* Missed SDG waste reduction targets
+**This leads to critical failures:**
+* 🚮 **Contaminated recycling bins**
+* 📉 **Lower material recovery rates**
+* 🏔️ **Increased landfill pressure**
+* 🎯 **Missed SDG waste reduction targets**
 
 Waste operators face downstream consequences such as contamination and reduced material recovery.
 
+
 ##  
 
-# **SDG Tackled**
+# 🌍SDG Tackled
 
-## SDG 11: Sustainable Cities and Communities
+### 🏙️ SDG 11: Sustainable Cities and Communities
+> **Target 11.6:** Reduce the adverse per capita environmental impact of cities, including by paying special attention to municipal and other waste management.
 
-* Target 11.6: Reduce the adverse per capita environmental impact of cities, including by paying special attention to municipal and other waste management.  
-* Relevance: Urban waste mismanagement directly increases environmental burden and landfill pressure. Our solution improves sorting accuracy at the source.  
-* Reason for Choosing: Malaysia’s solid waste generation has been rising for decades, with daily waste volumes growing significantly year over year. Without better recycling participation and proper waste separation at source, the environmental impact of urban living intensifies. By improving decision-making at disposal points, EcoTrack directly contributes to reducing landfill load and toxic emissions, aligning with SDG 11.6.
+* **Relevance:** Urban waste mismanagement directly increases environmental burden and landfill pressure. Our solution improves sorting accuracy at the source.
+* **The "Why":** Malaysia’s daily waste volume is growing significantly year-over-year. Without better recycling participation at the source, the environmental impact of urban living intensifies. By improving decision-making at disposal points, **EcoTrack** directly reduces landfill load and toxic emissions.
 
-## SDG 12: Responsible Consumption and Production
+### ♻️ SDG 12: Responsible Consumption and Production
+> **Target 12.5:** Substantially reduce waste generation through prevention, reduction, recycling, and reuse.
 
-* Target 12.5: Substantially reduce waste generation through prevention, reduction, recycling and reuse.  
-* Relevance: Waste reduction depends on effective recycling participation. EcoTrack directly supports reduction through accurate disposal guidance.  
-* Reason for Choosing: SDG 12.5 emphasizes reducing waste generation and increasing reuse/recycling. EcoTrack tackles a behavioral barrier — the confusion over recycling rules — that globally and locally reduces recycling efficiency. Malaysia’s goal of a 40 % national recycling rate by 2025 reflects this imperative, yet current practices lag partly due to uncertainty at the micro-decision level. EcoTrack meets this need by delivering instant, actionable guidance, effectively bridging the gap between policy and everyday behavior (NST Online, 2024\)
+* **Relevance:** Waste reduction depends on effective recycling participation. EcoTrack directly supports reduction through accurate disposal guidance.
+* **The "Why":** Malaysia aims for a **40% national recycling rate by 2025**. Current practices lag due to uncertainty at the micro-decision level. EcoTrack bridges the gap between national policy and everyday behavior by delivering instant, actionable guidance at the moment it's needed most (NST Online, 2024).
 
-## SDG 13: Climate Action
+### 🌍 SDG 13: Climate Action
+> **Target 13.3:** Improve education, awareness-raising, and human and institutional capacity on climate change mitigation.
 
-* Target 13.3: Improve education, awareness-raising and human and institutional capacity on climate change mitigation.  
-* Relevance: Climate mitigation requires behavior change and awareness. EcoTrack embeds/ encourages micro-learning at the point of disposal.  
-* Reason of Choosing: Climate action is not only about emissions targets; it requires human awareness and capacity to act sustainably. EcoTrack embeds micro-awareness into daily activity. By making recycling decisions easy and accurate, we foster a culture of responsible consumption and active participation in climate mitigation \- key to SDG 13.3.
+* **Relevance:** Climate mitigation requires behavior change and awareness. EcoTrack encourages **micro-learning** at the point of disposal.
+* **The "Why":** Climate action requires the human capacity to act sustainably. EcoTrack embeds micro-awareness into daily activity. By making recycling decisions easy and accurate, we foster a culture of responsible consumption and active participation in climate mitigation.
 
+*
+* ---
 ## Reducing Decision Friction 
 
 EcoTrack provides **real-time, AI-based clarity** at the moment of disposal, addressing one of the *core barriers* to correct recycling:
