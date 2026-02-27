@@ -386,7 +386,13 @@ const EcoTrackApp: React.FC = () => {
               ) : location ? (
                 <div className="space-y-3">
                   {sortedCenters.map((center, i) => (
-                    <div key={i} className="bg-white p-5 rounded-[28px] border border-gray-100 shadow-sm space-y-4">
+                    <a 
+                      key={i} 
+                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(center.name)}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="block bg-white p-5 rounded-[28px] border border-gray-100 shadow-sm space-y-4 hover:border-emerald-200 transition-all active:scale-[0.98]"
+                    >
                       <div className="flex justify-between items-start">
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-600">
@@ -397,6 +403,7 @@ const EcoTrackApp: React.FC = () => {
                             <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">{center.distance.toFixed(1)} KM AWAY</p>
                           </div>
                         </div>
+                        <i className="fas fa-arrow-up-right-from-square text-xs text-gray-300"></i>
                       </div>
                       
                       <div className="flex flex-wrap gap-2">
@@ -412,16 +419,11 @@ const EcoTrackApp: React.FC = () => {
                         ))}
                       </div>
 
-                      <a 
-                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(center.name)}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="flex items-center justify-center w-full py-3 bg-gray-50 rounded-xl text-xs font-bold text-gray-600 hover:bg-gray-100 transition-colors gap-2"
-                      >
+                      <div className="flex items-center justify-center w-full py-3 bg-gray-50 rounded-xl text-xs font-bold text-gray-600 gap-2">
                         <i className="fas fa-map"></i>
                         VIEW ON MAPS
-                      </a>
-                    </div>
+                      </div>
+                    </a>
                   ))}
                 </div>
               ) : (
@@ -440,13 +442,20 @@ const EcoTrackApp: React.FC = () => {
             <section className="space-y-4">
               <h3 className="font-bold text-gray-800">All Centers</h3>
               <div className="space-y-3">
+                {/* All Centers List */}
                 {[
                   'Subang Jaya Community Recycling Center',
                   'Petaling Jaya Waste Management Hub',
                   'Kuala Lumpur Eco-Park Collection Point',
                   'Shah Alam Green Initiative Center'
                 ].map((center, i) => (
-                  <div key={i} className="bg-white p-4 rounded-2xl border border-gray-100 flex items-center justify-between">
+                  <a 
+                    key={i} 
+                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(center)}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="bg-white p-4 rounded-2xl border border-gray-100 flex items-center justify-between hover:bg-gray-50 transition-colors cursor-pointer active:scale-[0.98]"
+                  >
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 bg-emerald-50 rounded-full flex items-center justify-center text-emerald-600">
                         <i className="fas fa-location-dot"></i>
@@ -454,7 +463,7 @@ const EcoTrackApp: React.FC = () => {
                       <span className="text-sm font-medium text-gray-700">{center}</span>
                     </div>
                     <i className="fas fa-arrow-up-right-from-square text-xs text-gray-300"></i>
-                  </div>
+                  </a>
                 ))}
               </div>
             </section>
