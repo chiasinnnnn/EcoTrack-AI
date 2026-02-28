@@ -21,6 +21,7 @@ const EcoTrackApp: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [location, setLocation] = useState<{lat: number, lng: number} | null>(null);
   const [isDetectingLocation, setIsDetectingLocation] = useState(false);
+  const [locationPermission, setLocationPermission] = useState('prompt');
   const [selectedBin, setSelectedBin] = useState<any | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -103,11 +104,26 @@ const EcoTrackApp: React.FC = () => {
 
   useEffect(() => {
     if (currentIndex === 2 && !location) {
-      detectLocation();
+      handleRefreshLocation();
     }
   }, [currentIndex]);
 
-  const detectLocation = () => {
+  useEffect(() => {
+    // Automatic listener for permission changes (Note: Safari/iOS support varies)
+    if (navigator.permissions && navigator.permissions.query) {
+      navigator.permissions.query({ name: 'geolocation' as any }).then((permissionStatus) => {
+        setLocationPermission(permissionStatus.state);
+        permissionStatus.onchange = () => {
+          setLocationPermission(permissionStatus.state);
+          if (permissionStatus.state === 'granted') {
+            handleRefreshLocation();
+          }
+        };
+      });
+    }
+  }, []);
+
+  const handleRefreshLocation = () => {
     setIsDetectingLocation(true);
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
@@ -117,15 +133,24 @@ const EcoTrackApp: React.FC = () => {
             lng: position.coords.longitude
           });
           setIsDetectingLocation(false);
+          setLocationPermission('granted');
         },
         (error) => {
           console.error("Error detecting location:", error);
           setIsDetectingLocation(false);
-        }
+          if (error.code === error.PERMISSION_DENIED) {
+            setLocationPermission('denied');
+          }
+        },
+        { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
       );
     } else {
       setIsDetectingLocation(false);
     }
+  };
+
+  const detectLocation = () => {
+    handleRefreshLocation();
   };
 
   const handleDelete = async (id: string, e: React.MouseEvent) => {
@@ -399,6 +424,13 @@ const EcoTrackApp: React.FC = () => {
                 </div>
               ) : location ? (
                 <div className="space-y-3">
+                  <button 
+                    onClick={handleRefreshLocation}
+                    className="w-full py-3 bg-emerald-50 text-emerald-700 rounded-2xl text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-2 border border-emerald-100 mb-2"
+                  >
+                    <i className="fas fa-location-crosshairs"></i>
+                    Update My Location
+                  </button>
                   {sortedCenters.map((center, i) => (
                     <a 
                       key={i} 
@@ -444,10 +476,11 @@ const EcoTrackApp: React.FC = () => {
                 <div className="py-12 text-center bg-gray-50 rounded-[28px] border border-dashed border-gray-200">
                   <p className="text-sm text-gray-500 mb-4 px-8">Enable location access to find recycling centers near you.</p>
                   <button 
-                    onClick={detectLocation}
-                    className="bg-emerald-600 text-white px-6 py-2 rounded-full text-xs font-bold shadow-md"
+                    onClick={handleRefreshLocation}
+                    className="bg-emerald-600 text-white px-8 py-3 rounded-full text-xs font-bold shadow-md uppercase tracking-widest flex items-center gap-2 mx-auto"
                   >
-                    ALLOW LOCATION
+                    <i className="fas fa-location-dot"></i>
+                    Find Bins Near Me
                   </button>
                 </div>
               )}
