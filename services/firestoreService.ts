@@ -32,11 +32,12 @@ const saveToLocal = (item: HistoryItem) => {
 
 let isFirestoreAvailable = true;
 
-export const saveScanToFirestore = async (userId: string, image: string, result: WasteAnalysis) => {
+export const saveScanToFirestore = async (userId: string, image: string, result: WasteAnalysis, clientTimestamp?: number) => {
+  const timestamp = clientTimestamp || Date.now();
   // Always save to local first as a fallback/cache
   const localItem: HistoryItem = {
-    id: `local_${Date.now()}`,
-    timestamp: Date.now(),
+    id: `local_${timestamp}`,
+    timestamp: timestamp,
     image,
     result
   };
@@ -49,7 +50,7 @@ export const saveScanToFirestore = async (userId: string, image: string, result:
       userId,
       image, 
       result,
-      timestamp: Timestamp.now()
+      timestamp: Timestamp.fromMillis(timestamp)
     });
   } catch (error: any) {
     if (error.code === 'permission-denied') {
@@ -82,7 +83,10 @@ export const getHistoryFromFirestore = async (userId: string): Promise<HistoryIt
     const localItems = getLocalHistory();
     const merged = [...remoteItems];
     localItems.forEach(local => {
-      if (!remoteItems.some(remote => remote.image === local.image)) {
+      const isAlreadyInRemote = remoteItems.some(remote => 
+        remote.image === local.image && Math.abs(remote.timestamp - local.timestamp) < 2000
+      );
+      if (!isAlreadyInRemote) {
         merged.push(local);
       }
     });
@@ -124,10 +128,12 @@ export const subscribeToUserHistory = (userId: string, callback: (items: History
       
       const localItems = getLocalHistory();
       
-      // Merge: Keep all remote items, and add local items that aren't in remote yet (by image matching)
+      // Merge: Keep all remote items, and add local items that aren't in remote yet (by image + timestamp matching)
       const merged = [...remoteItems];
       localItems.forEach(local => {
-        const isAlreadyInRemote = remoteItems.some(remote => remote.image === local.image);
+        const isAlreadyInRemote = remoteItems.some(remote => 
+          remote.image === local.image && Math.abs(remote.timestamp - local.timestamp) < 2000
+        );
         if (!isAlreadyInRemote) {
           merged.push(local);
         }

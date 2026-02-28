@@ -69,30 +69,28 @@ const EcoTrackApp: React.FC = () => {
           const data = await analyzeWasteImage(base64);
           clearTimeout(timeout);
           
-          // Batch updates for immediate feedback
-          setResult({ ...data, timestamp: Date.now() } as any);
-          setLoading(false);
-          
-          // Background save to Firestore (non-blocking)
-          const userId = auth.currentUser?.uid;
-          if (userId) {
-            saveScanToFirestore(userId, base64, data).catch(err => {
-              console.error("Background save failed:", err);
-            });
-          }
-
-          // Optimistic update for immediate UI feedback (Counters & History)
+          const timestamp = Date.now();
           const newItem: HistoryItem = {
-            id: `temp_${Date.now()}`,
-            timestamp: Date.now(),
+            id: `temp_${timestamp}`,
+            timestamp,
             image: base64,
             result: data
           };
-          setHistory(prev => {
-            // Avoid duplicates if subscription already fired or local save already picked up
-            if (prev.some(item => item.image === base64)) return prev;
-            return [newItem, ...prev].slice(0, 50);
-          });
+
+          // 1. Update history immediately (Optimistic)
+          setHistory(prev => [newItem, ...prev].slice(0, 50));
+          
+          // 2. Show result
+          setResult({ ...data, timestamp } as any);
+          setLoading(false);
+          
+          // 3. Background save to Firestore (non-blocking)
+          const userId = auth.currentUser?.uid;
+          if (userId) {
+            saveScanToFirestore(userId, base64, data, timestamp).catch(err => {
+              console.error("Background save failed:", err);
+            });
+          }
         } catch (err: any) {
           clearTimeout(timeout);
           setError(err.message);
