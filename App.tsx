@@ -22,6 +22,7 @@ const EcoTrackApp: React.FC = () => {
   const [location, setLocation] = useState<{lat: number, lng: number} | null>(null);
   const [isDetectingLocation, setIsDetectingLocation] = useState(false);
   const [locationPermission, setLocationPermission] = useState('prompt');
+  const [showLocationConfirm, setShowLocationConfirm] = useState(false);
   const [selectedBin, setSelectedBin] = useState<any | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -103,8 +104,8 @@ const EcoTrackApp: React.FC = () => {
   };
 
   useEffect(() => {
-    if (currentIndex === 2 && !location) {
-      handleRefreshLocation();
+    if (currentIndex === 2 && !location && locationPermission === 'granted') {
+      handleRefreshLocation(true);
     }
   }, [currentIndex]);
 
@@ -123,7 +124,13 @@ const EcoTrackApp: React.FC = () => {
     }
   }, []);
 
-  const handleRefreshLocation = () => {
+  const handleRefreshLocation = (force = false) => {
+    if (!force && locationPermission === 'prompt') {
+      setShowLocationConfirm(true);
+      return;
+    }
+    
+    setShowLocationConfirm(false);
     setIsDetectingLocation(true);
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
@@ -579,6 +586,35 @@ const EcoTrackApp: React.FC = () => {
       )}
 
       <input ref={fileInputRef} type="file" className="hidden" accept="image/*" onChange={handleFile} />
+
+      {/* Location Confirmation Modal */}
+      {showLocationConfirm && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/60 backdrop-blur-sm p-6 animate-in fade-in duration-200">
+          <div className="w-full max-w-xs bg-white rounded-[32px] p-8 shadow-2xl animate-in zoom-in-95 duration-300">
+            <div className="w-16 h-16 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-600 mx-auto mb-6">
+              <i className="fas fa-location-dot text-2xl"></i>
+            </div>
+            <h3 className="text-xl font-black text-gray-900 text-center mb-2">Use Location?</h3>
+            <p className="text-sm text-gray-500 text-center mb-8 leading-relaxed">
+              EcoTrack uses your location to find the nearest recycling centers in Malaysia.
+            </p>
+            <div className="flex flex-col gap-3">
+              <button 
+                onClick={() => handleRefreshLocation(true)}
+                className="w-full py-4 bg-emerald-600 text-white rounded-2xl font-bold shadow-lg shadow-emerald-200 active:scale-95 transition-transform"
+              >
+                YES, ALLOW
+              </button>
+              <button 
+                onClick={() => setShowLocationConfirm(false)}
+                className="w-full py-4 bg-gray-50 text-gray-500 rounded-2xl font-bold active:scale-95 transition-transform"
+              >
+                NOT NOW
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* NavigationBar Widget */}
       <nav className="fixed bottom-0 left-0 right-0 max-w-lg mx-auto bg-[#f0f1eb]/90 backdrop-blur-xl border-t border-gray-100 h-20 flex items-center justify-around px-8 z-40">
