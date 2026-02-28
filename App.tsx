@@ -132,7 +132,15 @@ const EcoTrackApp: React.FC = () => {
     
     setShowLocationConfirm(false);
     setIsDetectingLocation(true);
+
     if ("geolocation" in navigator) {
+      // IMPORTANT: iOS requires these specific options to 'wake up'
+      const options = {
+        enableHighAccuracy: true, // Forces the GPS hardware on
+        timeout: 10000,           // Prevents the infinite 'hanging'
+        maximumAge: 0             // Forces a fresh location, not a old cached one
+      };
+
       navigator.geolocation.getCurrentPosition(
         (position) => {
           setLocation({
@@ -141,18 +149,27 @@ const EcoTrackApp: React.FC = () => {
           });
           setIsDetectingLocation(false);
           setLocationPermission('granted');
+          console.log("Location Found:", position.coords.latitude, position.coords.longitude);
         },
         (error) => {
           console.error("Error detecting location:", error);
           setIsDetectingLocation(false);
+          
           if (error.code === error.PERMISSION_DENIED) {
             setLocationPermission('denied');
+            alert("Location permission denied. Please check Settings > Privacy > Location.");
+          } else if (error.code === 3) {
+            // Timeout
+            alert("GPS is taking a moment to wake up. Please tap the button again.");
+          } else {
+            alert("Error: " + error.message + ". Check Settings > Privacy > Location.");
           }
         },
-        { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+        options
       );
     } else {
       setIsDetectingLocation(false);
+      alert("Geolocation is not supported by your browser.");
     }
   };
 
@@ -432,11 +449,21 @@ const EcoTrackApp: React.FC = () => {
               ) : location ? (
                 <div className="space-y-3">
                   <button 
-                    onClick={handleRefreshLocation}
-                    className="w-full py-3 bg-emerald-50 text-emerald-700 rounded-2xl text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-2 border border-emerald-100 mb-2"
+                    onClick={() => handleRefreshLocation()}
+                    disabled={isDetectingLocation}
+                    className="w-full py-3 bg-emerald-50 text-emerald-700 rounded-2xl text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-2 border border-emerald-100 mb-2 active:scale-95 transition-transform disabled:opacity-50"
                   >
-                    <i className="fas fa-location-crosshairs"></i>
-                    Update My Location
+                    {isDetectingLocation ? (
+                      <>
+                        <div className="w-3 h-3 border-2 border-emerald-200 border-t-emerald-600 rounded-full animate-spin"></div>
+                        Detecting...
+                      </>
+                    ) : (
+                      <>
+                        <i className="fas fa-location-crosshairs"></i>
+                        Update My Location
+                      </>
+                    )}
                   </button>
                   {sortedCenters.map((center, i) => (
                     <a 
@@ -483,11 +510,21 @@ const EcoTrackApp: React.FC = () => {
                 <div className="py-12 text-center bg-gray-50 rounded-[28px] border border-dashed border-gray-200">
                   <p className="text-sm text-gray-500 mb-4 px-8">Enable location access to find recycling centers near you.</p>
                   <button 
-                    onClick={handleRefreshLocation}
-                    className="bg-emerald-600 text-white px-8 py-3 rounded-full text-xs font-bold shadow-md uppercase tracking-widest flex items-center gap-2 mx-auto"
+                    onClick={() => handleRefreshLocation()}
+                    disabled={isDetectingLocation}
+                    className="bg-emerald-600 text-white px-8 py-3 rounded-full text-xs font-bold shadow-md uppercase tracking-widest flex items-center gap-2 mx-auto active:scale-95 transition-transform disabled:opacity-50"
                   >
-                    <i className="fas fa-location-dot"></i>
-                    Find Bins Near Me
+                    {isDetectingLocation ? (
+                      <>
+                        <div className="w-3 h-3 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+                        Searching...
+                      </>
+                    ) : (
+                      <>
+                        <i className="fas fa-location-dot"></i>
+                        Find Bins Near Me
+                      </>
+                    )}
                   </button>
                 </div>
               )}
@@ -601,9 +638,17 @@ const EcoTrackApp: React.FC = () => {
             <div className="flex flex-col gap-3">
               <button 
                 onClick={() => handleRefreshLocation(true)}
-                className="w-full py-4 bg-emerald-600 text-white rounded-2xl font-bold shadow-lg shadow-emerald-200 active:scale-95 transition-transform"
+                disabled={isDetectingLocation}
+                className="w-full py-4 bg-emerald-600 text-white rounded-2xl font-bold shadow-lg shadow-emerald-200 active:scale-95 transition-transform disabled:opacity-50 flex items-center justify-center gap-2"
               >
-                YES, ALLOW
+                {isDetectingLocation ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+                    ALLOWING...
+                  </>
+                ) : (
+                  'YES, ALLOW'
+                )}
               </button>
               <button 
                 onClick={() => setShowLocationConfirm(false)}
