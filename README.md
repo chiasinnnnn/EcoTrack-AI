@@ -373,6 +373,12 @@ Rather than fighting the tool's constraints, we restructured our team of three a
 > **🚀 Live Demo:** Skip the setup and try the successfully deployed web app here:  
 > **[https://eco-track-ai-nine.vercel.app/](https://eco-track-ai-nine.vercel.app/)**
 
+## 📖 How to Use
+1. **Open the Link** on your mobile browser (Safari/Chrome).
+2. **Sign In** with your Google account to track your history.
+3. **Allow Permissions**: Click "Allow" for Camera and Location when prompted.
+4. **Scan**: Point your camera at a piece of waste.
+5. **Recycle**: Follow the bin color and "Rinse" instructions!
 ---
 
 ### 📋 Prerequisites
